@@ -27,6 +27,7 @@ testing:
       - hotfix
     sonarQube:
       - feature
+      - develop
       - release
       - hotfix
     checkstyle:
