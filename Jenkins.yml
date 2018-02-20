@@ -1,0 +1,58 @@
+openshift:
+  templatePath: kube/template.yaml
+
+maven:
+  profileFeature:
+  profileDevelop:
+  profileRelease:
+  profileMaster:
+  profileHotfix:
+
+spring:
+  profileFeature: dev
+  profileDevelop: dev
+  profileRelease: uat
+  profileMaster: prod
+  profileHotfix: uat
+
+confirmDeploy:
+  - master
+
+testing:
+  predeploy:
+    unitTesting:
+      - feature
+      - develop
+      - release
+      - hotfix
+    sonarQube:
+      - feature
+      - release
+      - hotfix
+    checkstyle:
+      # - feature
+      # - develop
+      # - release
+
+  postdeploy:
+    smokeTesting:
+      - release
+      - master
+      - develop
+    securityTesting:
+      - release
+    performanceTesting:
+      - develop
+      - release
+      - hotfix
+    acceptanceTesting:
+      - release
+
+notifications:
+  branch:
+    - feature
+    - develop
+    - release
+    - master
+    - hotfix
+type: slack
