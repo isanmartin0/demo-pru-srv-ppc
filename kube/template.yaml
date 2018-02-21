@@ -45,6 +45,8 @@ objects:
           value: ${WAR_FILE_URL}
         - name: ARTIFACTORY_TOKEN
           value: ${ARTIFACTORY_TOKEN}
+        - name: XXXXX
+          value: 200
         from:
           kind: ImageStreamTag
           name: jws-java-appdynamics:1.0
