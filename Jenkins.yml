@@ -2,7 +2,7 @@ openshift:
   templatePath: kube/template.yaml
 
 maven:
-  profileFeature:
+  profileFeature: local
   profileDevelop:
   profileRelease:
   profileMaster:
