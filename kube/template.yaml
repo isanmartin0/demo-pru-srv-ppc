@@ -92,8 +92,8 @@ objects:
       spec:
         containers:
         - env:
-            - name: XXXXX
-              value: 'yyyy'
+            - name: QQQ
+              value: 'www'
           image: "${DOCKER_REGISTRY}:5000/${PROJECT}${BRANCH_NAME_HY_CONTAINER_IMAGE}/${PROJECT}:latest"
           imagePullPolicy: Always
           name: ${PROJECT}
