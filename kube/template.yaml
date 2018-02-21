@@ -91,7 +91,10 @@ objects:
           deploymentconfig: ${PROJECT}
       spec:
         containers:
-        - image: "${DOCKER_REGISTRY}:5000/${PROJECT}${BRANCH_NAME_HY_CONTAINER_IMAGE}/${PROJECT}:latest"
+        - env:
+            - name: XXXXX
+              value: 'yyyy'
+          image: "${DOCKER_REGISTRY}:5000/${PROJECT}${BRANCH_NAME_HY_CONTAINER_IMAGE}/${PROJECT}:latest"
           imagePullPolicy: Always
           name: ${PROJECT}
           ports:
@@ -103,9 +106,6 @@ objects:
         restartPolicy: Always
         securityContext: {}
         terminationGracePeriodSeconds: 30
-        env:
-          - name: XXXXX
-            value: 'yyyy'
     test: false
   status:
     availableReplicas: 0
