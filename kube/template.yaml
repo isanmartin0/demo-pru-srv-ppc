@@ -91,9 +91,6 @@ objects:
           deploymentconfig: ${PROJECT}
       spec:
         containers:
-        - env:
-          - name: var_propia
-            value: 'zzzz'
         - image: "${DOCKER_REGISTRY}:5000/${PROJECT}${BRANCH_NAME_HY_CONTAINER_IMAGE}/${PROJECT}:latest"
           imagePullPolicy: Always
           name: ${PROJECT}
@@ -106,6 +103,9 @@ objects:
         restartPolicy: Always
         securityContext: {}
         terminationGracePeriodSeconds: 30
+        env:
+          - name: XXXXX
+            value: 'yyyy'
     test: false
   status:
     availableReplicas: 0
