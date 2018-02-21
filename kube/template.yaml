@@ -46,7 +46,7 @@ objects:
         - name: ARTIFACTORY_TOKEN
           value: ${ARTIFACTORY_TOKEN}
         - name: XXXXX
-          value: 200
+          value: 'yyyy'
         from:
           kind: ImageStreamTag
           name: jws-java-appdynamics:1.0
@@ -93,7 +93,7 @@ objects:
         containers:
         - env:
           - name: var_propia
-            value: "xxxx"
+            value: 'zzzz'
         - image: "${DOCKER_REGISTRY}:5000/${PROJECT}${BRANCH_NAME_HY_CONTAINER_IMAGE}/${PROJECT}:latest"
           imagePullPolicy: Always
           name: ${PROJECT}
