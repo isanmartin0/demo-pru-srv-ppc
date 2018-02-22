@@ -160,7 +160,7 @@ def runPPCJenkinsfile() {
 
             if (!isPPCJenkinsFile || !isPPCJenkinsYaml || isPPCOpenshiftTemplate) {
                 currentBuild.result = 'FAILURE'
-                throw new hudson.AbortException('The parallel project configuration hasn't mandatory elements)
+                throw new hudson.AbortException('The parallel project configuration hasn't mandatory elements')
             }
 
             //Take parameters of the parallel project configuration (PPC)
