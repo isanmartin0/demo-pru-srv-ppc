@@ -52,6 +52,29 @@ def runPPCJenkinsfile() {
     echo "BEGIN PARALLEL PROJECT CONFIGURATION (PPC)"
 
 
+    stage('Remove old builds') {
+
+        def maxOldBuildsToKeepStr = params.maxOldBuildsToKeep
+
+        if (maxOldBuildsToKeepStr.isInteger()) {
+          maxOldBuildsToKeep = maxOldBuildsToKeepStr as Integer
+        }
+
+        echo "maxOldBuildsToKeep: ${maxOldBuildsToKeep}"
+
+        if (maxOldBuildsToKeep > 0) {
+
+            echo "Keeping last ${maxOldBuildsToKeep} builds"
+
+            properties([[
+             $class: 'jenkins.model.BuildDiscarderProperty',
+              strategy: [$class: 'LogRotator', numToKeepStr: '${maxOldBuildsToKeep}', artifactNumToKeepStr: '${maxOldBuildsToKeep}']
+            ]])
+
+        }
+
+    }
+
     node('maven') {
 
         //sleep 10
@@ -446,29 +469,6 @@ def runPPCJenkinsfile() {
             )
         }
     */
-
-    }
-
-    stage('Remove old builds') {
-
-        def maxOldBuildsToKeepStr = params.maxOldBuildsToKeep
-
-        if (maxOldBuildsToKeepStr.isInteger()) {
-          maxOldBuildsToKeep = maxOldBuildsToKeepStr as Integer
-        }
-
-        echo "maxOldBuildsToKeep: ${maxOldBuildsToKeep}"
-
-        if (maxOldBuildsToKeep > 0) {
-
-            echo "Keeping last ${maxOldBuildsToKeep} builds"
-
-            properties([[
-             $class: 'jenkins.model.BuildDiscarderProperty',
-              strategy: [$class: 'LogRotator', numToKeepStr: '${maxOldBuildsToKeep}', artifactNumToKeepStr: '${maxOldBuildsToKeep}']
-            ]])
-
-        }
 
     }
 
