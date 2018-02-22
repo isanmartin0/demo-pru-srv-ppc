@@ -60,7 +60,7 @@ def runPPCJenkinsfile() {
         echo "Executing Jenkinsfile from Parallel Project Configuration (PPC)"
 
 
-        stage('Detect Parallel project configuration (PPC)') {
+        stage('Check Parallel project configuration elements (PPC)') {
 
             pom = readMavenPom()
             projectURL = pom.url
@@ -201,6 +201,8 @@ def runPPCJenkinsfile() {
                   strategy: [$class: 'LogRotator', numToKeepStr: '${maxOldBuildsToKeep}', artifactNumToKeepStr: '${maxOldBuildsToKeep}']
                 ]])
 
+            } else {
+                echo "Not removing old builds."
             }
 
         }
