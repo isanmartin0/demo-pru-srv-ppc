@@ -58,4 +58,4 @@ notifications:
     - hotfix
 type: slack
 
-maxOldBuildsToKeep: a
+maxOldBuildsToKeep: 5
