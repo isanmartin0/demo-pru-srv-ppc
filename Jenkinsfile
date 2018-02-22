@@ -223,7 +223,7 @@ def runPPCJenkinsfile() {
 
             echo "Keeping last ${maxOldBuildsToKeep} builds"
 
-            properties([[$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: "${maxOldBuildsToKeep}"]]]);
+            properties([[$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '${maxOldBuildsToKeep}']]]);
 
 
         } else {
