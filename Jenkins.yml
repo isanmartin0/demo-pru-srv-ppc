@@ -9,8 +9,8 @@ maven:
   profileHotfix:
 
 spring:
-  profileFeature: devzz
-  profileDevelop: dev
+  profileFeature: dev
+  profileDevelop: devzz
   profileRelease: uat
   profileMaster: prod
   profileHotfix: uat
