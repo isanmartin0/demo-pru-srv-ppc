@@ -184,10 +184,10 @@ def runPPCJenkinsfile() {
         stage('Remove old builds') {
 
             echo "params.maxOldBuildsToKeep: ${params.maxOldBuildsToKeep}"
-            def maxOldBuildsToKeepStr = params.maxOldBuildsToKeep
+            String maxOldBuildsToKeepParam = params.maxOldBuildsToKeep
 
-            if (maxOldBuildsToKeepStr.isInteger()) {
-              maxOldBuildsToKeep = maxOldBuildsToKeepStr as Integer
+            if (maxOldBuildsToKeepParam.isInteger()) {
+              maxOldBuildsToKeep = maxOldBuildsToKeepParam as Integer
             }
 
             echo "maxOldBuildsToKeep: ${maxOldBuildsToKeep}"
