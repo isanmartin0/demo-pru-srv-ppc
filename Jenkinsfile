@@ -351,88 +351,88 @@ def runPPCJenkinsfile() {
 
     } // end of node
 
-        def deploy = 'Yes'
+    def deploy = 'Yes'
 
-        if (branchType in params.confirmDeploy) {
-            stage('Decide on Deploying') {
-                deploy = input message: 'Waiting for user approval',
-                        parameters: [choice(name: 'Continue and deploy?', choices: 'No\nYes', description: 'Choose "Yes" if you want to deploy this build')]
+    if (branchType in params.confirmDeploy) {
+        stage('Decide on Deploying') {
+            deploy = input message: 'Waiting for user approval',
+                    parameters: [choice(name: 'Continue and deploy?', choices: 'No\nYes', description: 'Choose "Yes" if you want to deploy this build')]
+        }
+    }
+
+    if (deploy == 'Yes') {
+        node {
+            checkout scm
+            stage('OpenShift Deploy') {
+                echo "Deploying on OpenShift..."
+
+                openshiftDeployProject {
+                    branchHY = branchNameHY
+                    branch_type = branchType
+                }
+
             }
         }
 
-        if (deploy == 'Yes') {
-            node {
-                checkout scm
-                stage('OpenShift Deploy') {
-                    echo "Deploying on OpenShift..."
+        def tasks = [:]
 
-                    openshiftDeployProject {
-                        branchHY = branchNameHY
-                        branch_type = branchType
-                    }
-
+        if (branchType in params.testing.postdeploy.smokeTesting) {
+            tasks["smoke"] = {
+                stage('Smoke Tests') {
+                    echo "Running smoke tests..."
+                    //sh 'bzt testing/smoke.yml'
                 }
             }
+        } else {
+            echo "Skipping smoke tests..."
+        }
 
-            def tasks = [:]
-
-            if (branchType in params.testing.postdeploy.smokeTesting) {
-                tasks["smoke"] = {
-                    stage('Smoke Tests') {
-                        echo "Running smoke tests..."
-                        //sh 'bzt testing/smoke.yml'
-                    }
+        if (branchType in params.testing.postdeploy.acceptanceTesting) {
+            tasks["acceptance"] = {
+                stage('Acceptance Tests') {
+                    echo "Running acceptance tests..."
+                    //sh 'bzt testing/acceptance.yml'
                 }
-            } else {
-                echo "Skipping smoke tests..."
             }
+        } else {
+            echo "Skipping acceptance tests..."
+        }
 
-            if (branchType in params.testing.postdeploy.acceptanceTesting) {
-                tasks["acceptance"] = {
-                    stage('Acceptance Tests') {
-                        echo "Running acceptance tests..."
-                        //sh 'bzt testing/acceptance.yml'
-                    }
+        if (branchType in params.testing.postdeploy.securityTesting) {
+            tasks["security"] = {
+                stage('Security Tests') {
+                    echo "Running security tests..."
+                    //sh 'bzt testing/security.yml'
                 }
-            } else {
-                echo "Skipping acceptance tests..."
             }
+        } else {
+            echo "Skipping security tests..."
+        }
 
-            if (branchType in params.testing.postdeploy.securityTesting) {
-                tasks["security"] = {
-                    stage('Security Tests') {
-                        echo "Running security tests..."
-                        //sh 'bzt testing/security.yml'
-                    }
-                }
-            } else {
-                echo "Skipping security tests..."
-            }
+        node('maven') { //taurus
+            checkout scm
+            parallel tasks
+        }
 
+        if (branchType in params.testing.postdeploy.performanceTesting) {
             node('maven') { //taurus
                 checkout scm
-                parallel tasks
-            }
-
-            if (branchType in params.testing.postdeploy.performanceTesting) {
-                node('maven') { //taurus
-                    checkout scm
-                    stage('Performance Tests') {
-                        echo "Running performance tests..."
-                        //sh 'bzt testing/performance.yml'
-                    }
+                stage('Performance Tests') {
+                    echo "Running performance tests..."
+                    //sh 'bzt testing/performance.yml'
                 }
-            } else {
-                echo "Skipping performance tests..."
             }
+        } else {
+            echo "Skipping performance tests..."
         }
+    }
 
 
 
-        stage('Notification') {
-            echo "Sending Notifications..."
+    stage('Notification') {
+        echo "Sending Notifications..."
 
-            /*
+     /*
         if (currentBuild.result != 'SUCCESS') {
             slackSend channel: '#ops-room', color: '#FF0000', message: "The pipeline ${currentBuild.fullDisplayName} has failed."
             hipchatSend (color: 'RED', notify: true, message: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
@@ -443,9 +443,16 @@ def runPPCJenkinsfile() {
                     recipientProviders: [[$class: 'DevelopersRecipientProvider']]
             )
         }
-        */
+    */
 
-        }
+    }
+
+    stage('Remove old builds') {
+        properties([[
+         $class: 'jenkins.model.BuildDiscarderProperty',
+          strategy: [$class: 'LogRotator', numToKeepStr: '20', artifactNumToKeepStr: '20']
+        ]])
+    }
 
 
     echo "END PARALLEL PROJECT CONNFIGURATION (PPC)"
