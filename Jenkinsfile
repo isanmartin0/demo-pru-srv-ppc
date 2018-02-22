@@ -158,7 +158,7 @@ def runPPCJenkinsfile() {
         stage('Load pipeline configuration') {
 
 
-            if (!isPPCJenkinsFile || !isPPCJenkinsYaml || isPPCOpenshiftTemplate) {
+            if (!isPPCJenkinsFile || !isPPCJenkinsYaml || !isPPCOpenshiftTemplate) {
                 currentBuild.result = 'FAILURE'
                 throw new hudson.AbortException('The parallel project configuration has not mandatory elements')
             }
