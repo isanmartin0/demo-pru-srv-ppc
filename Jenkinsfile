@@ -47,6 +47,8 @@ def runPPCJenkinsfile() {
     def artifactId
     def groupId
 
+    int maxOldBuildsToKeep = 0
+
     echo "BEGIN PARALLEL PROJECT CONFIGURATION (PPC)"
 
 
@@ -448,10 +450,26 @@ def runPPCJenkinsfile() {
     }
 
     stage('Remove old builds') {
-        properties([[
-         $class: 'jenkins.model.BuildDiscarderProperty',
-          strategy: [$class: 'LogRotator', numToKeepStr: '20', artifactNumToKeepStr: '20']
-        ]])
+
+        def maxOldBuildsToKeepStr = params.maxOldBuildsToKeep
+
+        if (maxOldBuildsToKeepStr.isInteger()) {
+          maxOldBuildsToKeep = maxOldBuildsToKeepStr as Integer
+        }
+
+        echo "maxOldBuildsToKeep: ${maxOldBuildsToKeep}"
+
+        if (maxOldBuildsToKeep > 0) {
+
+            echo "Keeping last ${maxOldBuildsToKeep} builds"
+
+            properties([[
+             $class: 'jenkins.model.BuildDiscarderProperty',
+              strategy: [$class: 'LogRotator', numToKeepStr: '${maxOldBuildsToKeep}', artifactNumToKeepStr: '${maxOldBuildsToKeep}']
+            ]])
+
+        }
+
     }
 
 
