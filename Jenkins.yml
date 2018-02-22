@@ -10,7 +10,7 @@ maven:
 
 spring:
   profileFeature: dev
-  profileDevelop: develop
+  profileDevelop:
   profileRelease: uat
   profileMaster: prod
   profileHotfix: uat
