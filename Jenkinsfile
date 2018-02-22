@@ -207,6 +207,31 @@ def runPPCJenkinsfile() {
 
         }
 
+
+    stage('Remove old builds') {
+
+        echo "params.maxOldBuildsToKeep: ${params.maxOldBuildsToKeep}"
+        String maxOldBuildsToKeepParam = params.maxOldBuildsToKeep
+
+        if (maxOldBuildsToKeepParam.isInteger()) {
+            maxOldBuildsToKeep = maxOldBuildsToKeepParam as Integer
+        }
+
+        echo "maxOldBuildsToKeep: ${maxOldBuildsToKeep}"
+
+        if (maxOldBuildsToKeep > 0) {
+
+            echo "Keeping last ${maxOldBuildsToKeep} builds"
+
+            properties([[$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: "${maxOldBuildsToKeep}"]]]);
+
+
+        } else {
+            echo "Not removing old builds."
+        }
+
+    }
+
         stage ('Prepare profiles') {
             switch (branchType) {
                 case 'feature':
@@ -449,31 +474,7 @@ def runPPCJenkinsfile() {
 
     }
 
-    stage('Remove old builds') {
 
-        echo "params.maxOldBuildsToKeep: ${params.maxOldBuildsToKeep}"
-        String maxOldBuildsToKeepParam = params.maxOldBuildsToKeep
-
-        if (maxOldBuildsToKeepParam.isInteger()) {
-          maxOldBuildsToKeep = maxOldBuildsToKeepParam as Integer
-        }
-
-        echo "maxOldBuildsToKeep: ${maxOldBuildsToKeep}"
-
-        if (maxOldBuildsToKeep > 0) {
-
-            echo "Keeping last ${maxOldBuildsToKeep} builds"
-
-            properties([[
-             $class: 'jenkins.model.BuildDiscarderProperty',
-              strategy: [$class: 'LogRotator', numToKeepStr: '${maxOldBuildsToKeep}', artifactNumToKeepStr: '${maxOldBuildsToKeep}']
-            ]])
-
-        } else {
-            echo "Not removing old builds."
-        }
-
-    }
 
     echo "END PARALLEL PROJECT CONNFIGURATION (PPC)"
 
