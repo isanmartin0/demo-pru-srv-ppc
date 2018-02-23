@@ -208,29 +208,52 @@ def runPPCJenkinsfile() {
         }
 
 
-    stage('Remove old builds') {
+        stage('Remove old builds') {
 
-        echo "params.maxOldBuildsToKeep: ${params.maxOldBuildsToKeep}"
-        String maxOldBuildsToKeepParam = params.maxOldBuildsToKeep
+            echo "params.maxOldBuildsToKeep: ${params.jenkins.maxOldBuildsToKeep}"
+            echo "params.daysOldBuildsToKeep: ${params.jenkins.daysOldBuildsToKeep}"
 
-        if (maxOldBuildsToKeepParam.isInteger()) {
-            maxOldBuildsToKeep = maxOldBuildsToKeepParam as Integer
+            String maxOldBuildsToKeepParam = params.jenkins.maxOldBuildsToKeep
+            String daysOldBuildsToKeepParam = params.jenkins.daysOldBuildsToKeep
+
+            if (maxOldBuildsToKeepParam != null && maxOldBuildsToKeepParam.isInteger()) {
+                maxOldBuildsToKeep = maxOldBuildsToKeepParam as Integer
+            }
+
+            if (daysOldBuildsToKeepParam != null && daysOldBuildsToKeepParam.isInteger()) {
+                daysOldBuildsToKeep = daysOldBuildsToKeepParam as Integer
+            }
+
+            echo "maxOldBuildsToKeep: ${maxOldBuildsToKeep}"
+            echo "daysOldBuildsToKeep: ${daysOldBuildsToKeep}"
+
+            if (maxOldBuildsToKeep > 0 && daysOldBuildsToKeep > 0) {
+
+                echo "Keeping last ${maxOldBuildsToKeep} builds"
+                echo "Keeping builds for  ${daysOldBuildsToKeep} last days"
+
+                properties([[$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: "${daysOldBuildsToKeep}", numToKeepStr: "${maxOldBuildsToKeep}"]]]);
+
+            } else if (maxOldBuildsToKeep > 0) {
+
+                echo "Keeping last ${maxOldBuildsToKeep} builds"
+
+                properties([[$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: "${maxOldBuildsToKeep}"]]]);
+
+            } else if (daysOldBuildsToKeep > 0) {
+
+                echo "Keeping builds for  ${daysOldBuildsToKeep} last days"
+
+                properties([[$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: "${daysOldBuildsToKeep}", numToKeepStr: '']]]);
+
+            } else {
+
+                echo "Not removing old builds."
+
+                properties([[$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '']]]);
+
+            }
         }
-
-        echo "maxOldBuildsToKeep: ${maxOldBuildsToKeep}"
-
-        if (maxOldBuildsToKeep > 0) {
-
-            echo "Keeping last ${maxOldBuildsToKeep} builds"
-
-            properties([[$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: "${maxOldBuildsToKeep}"]]]);
-
-
-        } else {
-            echo "Not removing old builds."
-        }
-
-    }
 
         stage ('Prepare profiles') {
             switch (branchType) {
