@@ -66,7 +66,7 @@ def runPPCJenkinsfile() {
             projectURL = pom.url
             artifactId = pom.artifactId
             groupId = utils.getProjectGroupId(pom.groupId, pom.parent.groupId, false)
-
+        }
 
     }
 
