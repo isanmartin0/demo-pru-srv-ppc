@@ -61,6 +61,8 @@ def runPPCJenkinsfile() {
 
         echo "Executing Jenkinsfile from Parallel Project Configuration (PPC)"
 
+        echo "scm.branches: ${scm.branches}"
+
 
 
         stage('Check Parallel project configuration elements (PPC)') {
