@@ -51,12 +51,6 @@ def runPPCJenkinsfile() {
 
     echo "BEGIN PARALLEL PROJECT CONFIGURATION (PPC)"
 
-
-    node('maven') {
-
-        //sleep 10
-        //checkout scm
-
     checkout([
          $class: 'GitSCM',
          branches: scm.branches,
@@ -68,6 +62,7 @@ def runPPCJenkinsfile() {
         echo "Executing Jenkinsfile from Parallel Project Configuration (PPC)"
 
 
+
         stage('Check Parallel project configuration elements (PPC)') {
 
             pom = readMavenPom()
@@ -75,8 +70,6 @@ def runPPCJenkinsfile() {
             artifactId = pom.artifactId
             groupId = utils.getProjectGroupId(pom.groupId, pom.parent.groupId, false)
         }
-
-    }
 
 
 
