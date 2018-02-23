@@ -62,6 +62,7 @@ def runPPCJenkinsfile() {
         echo "Executing Jenkinsfile from Parallel Project Configuration (PPC)"
 
         echo "scm.branches: ${scm.branches}"
+        echo "scm.credentialsId: ${scm.credentialsId}"
 
 
 
