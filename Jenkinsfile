@@ -55,7 +55,15 @@ def runPPCJenkinsfile() {
     node('maven') {
 
         //sleep 10
-        checkout scm
+        //checkout scm
+
+    checkout([
+         $class: 'GitSCM',
+         branches: scm.branches,
+         doGenerateSubmoduleConfigurations: scm.doGenerateSubmoduleConfigurations,
+         extensions: scm.extensions,
+         userRemoteConfigs: scm.userRemoteConfigs
+    ])
 
         echo "Executing Jenkinsfile from Parallel Project Configuration (PPC)"
 
