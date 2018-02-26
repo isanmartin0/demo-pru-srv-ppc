@@ -56,7 +56,7 @@ def runPPCJenkinsfile() {
 
         //sleep 10
         checkout scm
-        
+
         stage('Check Parallel project configuration elements (PPC)') {
 
             pom = readMavenPom()
@@ -496,7 +496,6 @@ def runPPCJenkinsfile() {
 
     }
 
-}
 
     echo "END PARALLEL PROJECT CONNFIGURATION (PPC)"
 
