@@ -316,9 +316,15 @@ def runPPCJenkinsfile() {
         if (branchName == 'master')
         {
             stage('Check release version on Artifactory') {
-                checkArtifactoryReleaseVersion {
+                def artifactoryResponseCode = checkArtifactoryReleaseVersion {
                     artCredential = artifactoryCredential
                     repoUrl = artifactoryRepoURL
+                }
+
+                if (artifactoryResponseCode != null && "200".equals(artifactoryResponseCode)) {
+                    echo "Existe el artefacto en Artifactory"
+                } else {
+                    echo "No existe el artefacto en Artifactory"
                 }
 
             }
