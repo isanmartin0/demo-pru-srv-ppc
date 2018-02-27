@@ -1,5 +1,6 @@
 #!/usr/bin/groovy
 import com.evobanco.Utils
+import com.evobanco.Constants
 
 def runPPCJenkinsfile() {
 
@@ -311,23 +312,24 @@ def runPPCJenkinsfile() {
                 echo "Deploying artifact to Artifactory..."
                 sh "${mavenCmd} deploy -DskipTests=true -Dcheckstyle.skip=true ${mavenProfile}"
             }
-        }
+        } else {
+            // Is the master branch
 
-        if (branchName == 'master')
-        {
             stage('Check release version on Artifactory') {
                 def artifactoryResponseCode = checkArtifactoryReleaseVersion {
                     artCredential = artifactoryCredential
                     repoUrl = artifactoryRepoURL
                 }
 
-                if (artifactoryResponseCode != null && "200".equals(artifactoryResponseCode)) {
+                if (artifactoryResponseCode != null && Constants.HTTP_STATUS_CODE_OK.equals(artifactoryResponseCode)) {
                     echo "Existe el artefacto en Artifactory"
                 } else {
-                    echo "No existe el artefacto en Artifactory"
+                    currentBuild.result = 'FAILURE'
+                    throw new hudson.AbortException('The artifact on Artifactory is not avalaible for the pipeline')
                 }
 
             }
+
         }
 
         stage('OpenShift Build') {
