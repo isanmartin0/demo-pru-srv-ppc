@@ -36,7 +36,7 @@ objects:
     source:
       git:
         ref: master
-        uri: https://github.com/isanmartin0/ews-bin-deploy.git
+        uri: https://github.com/jucaf/ews-bin-deploy.git
       type: Git
     strategy:
       sourceStrategy:
