@@ -321,8 +321,10 @@ def runPPCJenkinsfile() {
                     repoUrl = artifactoryRepoURL
                 }
 
+                echo "Artifactory response status code: ${artifactoryResponseCode}"
+
                 if (artifactoryResponseCode != null && Constants.HTTP_STATUS_CODE_OK.equals(artifactoryResponseCode)) {
-                    echo "Existe el artefacto en Artifactory"
+                    echo "Artifact is avalaible for the pipeline"
                 } else {
                     currentBuild.result = 'FAILURE'
                     throw new hudson.AbortException('The artifact on Artifactory is not avalaible for the pipeline')
