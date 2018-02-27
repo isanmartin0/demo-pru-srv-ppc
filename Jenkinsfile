@@ -313,6 +313,17 @@ def runPPCJenkinsfile() {
             }
         }
 
+        if (branchName == 'master')
+        {
+            stage('Check release version on Artifactory') {
+                checkArtifactoryReleaseVersion {
+                    artCredential = artifactoryCredential
+                    repoUrl = artifactoryRepoURL
+                }
+
+            }
+        }
+
         stage('OpenShift Build') {
             echo "Building image on OpenShift..."
 
