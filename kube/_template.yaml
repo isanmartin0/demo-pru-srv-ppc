@@ -171,6 +171,6 @@ parameters:
 - description: "EnvLabel"
   name: "envLabel"
   value: ""
-- description: "Hos Name"
+- description: "Host Name"
   name: "HOST_NAME"
   value: ""
