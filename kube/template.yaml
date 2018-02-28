@@ -153,6 +153,20 @@ objects:
       name: ${PROJECT}
       weight: 100
     wildcardPolicy: None
+- apiVersion: extensions/v1beta1
+  kind: HorizontalPodAutoscaler
+  metadata:
+    name: ${PROJECT}
+  spec:
+    scaleRef:
+      kind: DeploymentConfig
+      name: ${PROJECT}
+      apiVersion: v1
+      subresource: scale
+    minReplicas: 2
+    maxReplicas: 4
+    cpuUtilization:
+      targetPercentage: 80
 parameters:
 - description: "Project name"
   name: "PROJECT"
