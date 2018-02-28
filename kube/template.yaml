@@ -89,10 +89,7 @@ objects:
           deploymentconfig: ${PROJECT}
       spec:
         containers:
-        - env:
-            - name: QQQ
-              value: 'www'
-          image: "${DOCKER_REGISTRY}:5000/${PROJECT}${BRANCH_NAME_HY_CONTAINER_IMAGE}/${PROJECT}:latest"
+         image: "${DOCKER_REGISTRY}:5000/${PROJECT}${BRANCH_NAME_HY_CONTAINER_IMAGE}/${PROJECT}:latest"
           imagePullPolicy: Always
           name: ${PROJECT}
           ports:
@@ -141,7 +138,7 @@ objects:
       openshift.io/host.generated: "true"
     name: ${PROJECT}
   spec:
-    host: "${PROJECT}-${BRANCH_NAME_HY}.svcs${envLabel}.grupoevo.corp"
+    host: "${PROJECT}${HOST_NAME}"
     port:
       targetPort: 8080-tcp
     to:
@@ -173,4 +170,7 @@ parameters:
   value: ""
 - description: "EnvLabel"
   name: "envLabel"
+  value: ""
+- description: "Hos Name"
+  name: "HOST_NAME"
   value: ""
