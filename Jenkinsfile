@@ -49,7 +49,17 @@ def runPPCJenkinsfile() {
     def groupId
 
     int maxOldBuildsToKeep = 0
+
+    //Taurus parameters
+    def taurus_test_base_path = 'src/test/taurus'
+    def acceptance_test_path = '/acceptance_test/'
+    def performance_test_path = '/performance_test/'
+    def smoke_test_path = '/smoke_test/'
+    def security_test_path = '/security_test/'
+
+
     def openshift_route_hostmane = ''
+
 
     echo "BEGIN PARALLEL PROJECT CONFIGURATION (PPC)"
 
@@ -443,10 +453,34 @@ def runPPCJenkinsfile() {
         }
 
         if (branchType in params.testing.postdeploy.performanceTesting) {
-            node('maven') { //taurus
+            node('taurus') { //taurus
                 checkout scm
                 stage('Performance Tests') {
                     echo "Running performance tests..."
+
+                    def test_files_location = taurus_test_base_path + performance_test_path + '**/*.yml'
+                    echo "Searching performance test with pattern: ${test_files_location}"
+
+                    def files = findFiles(glob: test_files_location)
+
+                    def testFilesNumber = files.length
+                    echo "Test files number: ${testFilesNumber}"
+
+                    files.eachWithIndex { file, index ->
+                        echo "Fichero #${index}: ${files[index].name}"
+
+                        def isDirectory = files[index].directory
+                        echo "is directory: ${isDirectory}"
+                        if (!isDirectory) {
+                            echo "Es un fichero"
+
+                            //def bztScript = 'bzt -o scenarios.scenario-default.default-address=https://digitalservices.evobanco.com -o modules.gatling.java-opts=-Ddefault-address=https://digitalservices.evobanco.com ' + files[index].path  + ' -report --option=modules.console.disable=true'
+
+                            //sh "${bztScript}"
+                        }
+
+                    }
+
                     //sh 'bzt testing/performance.yml'
                 }
             }
