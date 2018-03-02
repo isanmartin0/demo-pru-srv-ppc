@@ -43,6 +43,7 @@ testing:
       - develop
       - release
     performanceTesting:
+      - develop
       - release
       - hotfix
     acceptanceTesting:
