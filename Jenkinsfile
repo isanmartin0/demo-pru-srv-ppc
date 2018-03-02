@@ -49,6 +49,7 @@ def runPPCJenkinsfile() {
     def groupId
 
     int maxOldBuildsToKeep = 0
+    def openshift_route_hostmane = ''
 
     echo "BEGIN PARALLEL PROJECT CONFIGURATION (PPC)"
 
@@ -388,7 +389,7 @@ def runPPCJenkinsfile() {
             stage('OpenShift Deploy') {
                 echo "Deploying on OpenShift..."
 
-                openshiftDeployProject {
+                openshift_route_hostmane = openshiftDeployProject {
                     branchHY = branchNameHY
                     branch_type = branchType
                 }
@@ -396,7 +397,12 @@ def runPPCJenkinsfile() {
             }
         }
 
+
+        echo "Openshift route hostname: ${openshift_route_hostmane}"
+
         def tasks = [:]
+
+
 
         if (branchType in params.testing.postdeploy.smokeTesting) {
             tasks["smoke"] = {
