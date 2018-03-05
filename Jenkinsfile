@@ -51,7 +51,7 @@ def runPPCJenkinsfile() {
     int maxOldBuildsToKeep = 0
 
     //Taurus parameters
-    def taurus_test_base_path = 'src/test/resources/taurus'
+    def taurus_test_base_path = 'src/test/taurus'
     def acceptance_test_path = '/acceptance_test/'
     def performance_test_path = '/prueba_test/'
     def smoke_test_path = '/smoke_test/'
