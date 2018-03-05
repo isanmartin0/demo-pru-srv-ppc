@@ -418,7 +418,27 @@ def runPPCJenkinsfile() {
             tasks["smoke"] = {
                 stage('Smoke Tests') {
                     echo "Running smoke tests..."
-                    //sh 'bzt testing/smoke.yml'
+
+                    def test_files_location = taurus_test_base_path + smoke_test_path + '**/*.yml'
+                    echo "Searching smoke tests with pattern: ${test_files_location}"
+
+                    def files = findFiles(glob: test_files_location)
+
+                    def testFilesNumber = files.length
+                    echo "Smoke test files found number: ${testFilesNumber}"
+
+                    files.eachWithIndex { file, index ->
+
+                        def isDirectory = files[index].directory
+
+                        if (!isDirectory) {
+                            echo "Executing smoke test file number #${index}: ${files[index].path}"
+
+                            //def bztScript = 'bzt -o scenarios.scenario-default.default-address=https://digitalservices.evobanco.com -o modules.gatling.java-opts=-Ddefault-address=https://digitalservices.evobanco.com ' + files[index].path  + ' -report --option=modules.console.disable=true'
+
+                            //sh "${bztScript}"
+                        }
+                    }
                 }
             }
         } else {
@@ -429,7 +449,27 @@ def runPPCJenkinsfile() {
             tasks["acceptance"] = {
                 stage('Acceptance Tests') {
                     echo "Running acceptance tests..."
-                    //sh 'bzt testing/acceptance.yml'
+
+                    def test_files_location = taurus_test_base_path + acceptance_test_path + '**/*.yml'
+                    echo "Searching acceptance tests with pattern: ${test_files_location}"
+
+                    def files = findFiles(glob: test_files_location)
+
+                    def testFilesNumber = files.length
+                    echo "Acceptance test files found number: ${testFilesNumber}"
+
+                    files.eachWithIndex { file, index ->
+
+                        def isDirectory = files[index].directory
+
+                        if (!isDirectory) {
+                            echo "Executing security test file number #${index}: ${files[index].path}"
+
+                            //def bztScript = 'bzt -o scenarios.scenario-default.default-address=https://digitalservices.evobanco.com -o modules.gatling.java-opts=-Ddefault-address=https://digitalservices.evobanco.com ' + files[index].path  + ' -report --option=modules.console.disable=true'
+
+                            //sh "${bztScript}"
+                        }
+                    }
                 }
             }
         } else {
@@ -440,14 +480,34 @@ def runPPCJenkinsfile() {
             tasks["security"] = {
                 stage('Security Tests') {
                     echo "Running security tests..."
-                    //sh 'bzt testing/security.yml'
+
+                    def test_files_location = taurus_test_base_path + security_test_path + '**/*.yml'
+                    echo "Searching security tests with pattern: ${test_files_location}"
+
+                    def files = findFiles(glob: test_files_location)
+
+                    def testFilesNumber = files.length
+                    echo "Security test files found number: ${testFilesNumber}"
+
+                    files.eachWithIndex { file, index ->
+
+                        def isDirectory = files[index].directory
+
+                        if (!isDirectory) {
+                            echo "Executing security test file number #${index}: ${files[index].path}"
+
+                            //def bztScript = 'bzt -o scenarios.scenario-default.default-address=https://digitalservices.evobanco.com -o modules.gatling.java-opts=-Ddefault-address=https://digitalservices.evobanco.com ' + files[index].path  + ' -report --option=modules.console.disable=true'
+
+                            //sh "${bztScript}"
+                        }
+                    }
                 }
             }
         } else {
             echo "Skipping security tests..."
         }
 
-        node('maven') { //taurus
+        node('taurus') { //taurus
             checkout scm
             parallel tasks
         }
@@ -459,12 +519,12 @@ def runPPCJenkinsfile() {
                     echo "Running performance tests..."
 
                     def test_files_location = taurus_test_base_path + performance_test_path + '**/*.yml'
-                    echo "Searching performance test with pattern: ${test_files_location}"
+                    echo "Searching performance tests with pattern: ${test_files_location}"
 
                     def files = findFiles(glob: test_files_location)
 
                     def testFilesNumber = files.length
-                    echo "Test files number: ${testFilesNumber}"
+                    echo "Performance test files found number: ${testFilesNumber}"
 
                     files.eachWithIndex { file, index ->
 
@@ -479,8 +539,6 @@ def runPPCJenkinsfile() {
                         }
 
                     }
-
-                    //sh 'bzt testing/performance.yml'
                 }
             }
         } else {
