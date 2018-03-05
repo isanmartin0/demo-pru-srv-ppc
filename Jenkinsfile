@@ -534,7 +534,7 @@ def runPPCJenkinsfile() {
                             echo "Executing performance test file number #${index}: ${files[index].path}"
 
                             echo "Setting taurus scenarios.scenario-default.default-address to ${openshift_route_hostname}"
-                            echo "Setting taurus modules.gatling.java-opts to ${openshift_route_hostname}""
+                            echo "Setting taurus modules.gatling.java-opts to ${openshift_route_hostname}"
 
                             def bztScript = 'bzt -o scenarios.scenario-default.default-address=' + ${openshift_route_hostname} + ' -o modules.gatling.java-opts=' + ${openshift_route_hostname} + ' -Ddefault-address=https://digitalservices.evobanco.com ' + files[index].path  + ' -report --option=modules.console.disable=true'
 
