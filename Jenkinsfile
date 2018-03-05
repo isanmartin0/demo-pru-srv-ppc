@@ -444,6 +444,7 @@ def runPPCJenkinsfile() {
                             def bztScript = 'bzt -o scenarios.scenario-default.default-address=' + openshift_route_hostname_with_protocol + ' -o modules.gatling.java-opts=-Ddefault-address=' + openshift_route_hostname_with_protocol + ' ' + files[index].path  + ' -report --option=modules.console.disable=true'
 
                             echo "Executing script ${bztScript}"
+                            sh "${bztScript}"
                         }
                     }
                 }
@@ -478,6 +479,7 @@ def runPPCJenkinsfile() {
                             def bztScript = 'bzt -o scenarios.scenario-default.default-address=' + openshift_route_hostname_with_protocol + ' -o modules.gatling.java-opts=-Ddefault-address=' + openshift_route_hostname_with_protocol + ' ' + files[index].path  + ' -report --option=modules.console.disable=true'
 
                             echo "Executing script ${bztScript}"
+                            sh "${bztScript}"
                         }
                     }
                 }
@@ -512,6 +514,8 @@ def runPPCJenkinsfile() {
                             def bztScript = 'bzt -o scenarios.scenario-default.default-address=' + openshift_route_hostname_with_protocol + ' -o modules.gatling.java-opts=-Ddefault-address=' + openshift_route_hostname_with_protocol + ' ' + files[index].path  + ' -report --option=modules.console.disable=true'
 
                             echo "Executing script ${bztScript}"
+                            sh "${bztScript}"
+
                         }
                     }
                 }
