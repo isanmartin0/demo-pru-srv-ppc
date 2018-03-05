@@ -405,7 +405,7 @@ def runPPCJenkinsfile() {
                     branch_type = branchType
                 }
 
-                openshift_route_hostname_with_protocol = Utils.getRouteHostnameWithProtocol(openshift_route_hostname, false)
+                openshift_route_hostname_with_protocol = utils.getRouteHostnameWithProtocol(openshift_route_hostname, false)
 
             }
         }
