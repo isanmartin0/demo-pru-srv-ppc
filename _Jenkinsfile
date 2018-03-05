@@ -277,7 +277,73 @@ def runPPCJenkinsfile() {
         }
 
 
+        if (branchName != 'master')
+        {
+            if (branchType in params.testing.predeploy.checkstyle) {
+                stage('Checkstyle') {
+                    echo "Running Checkstyle artifact..."
+                    sh "${mavenCmd} checkstyle:check -DskipTests=true ${mavenProfile}"
+                }
+            } else {
+                echo "Skipping Checkstyle..."
+            }
 
+            stage('Build') {
+                echo "Building artifact..."
+                sh "${mavenCmd} package -DskipTests=true -Dcheckstyle.skip=true ${mavenProfile}"
+            }
+
+            if (branchType in params.testing.predeploy.unitTesting) {
+                stage('Unit Tests') {
+                    echo "Running unit tests..."
+                    sh "${mavenCmd} verify -Dcheckstyle.skip=true ${mavenProfile}"
+                }
+            } else {
+                echo "Skipping unit tests..."
+            }
+
+            if (branchType in params.testing.predeploy.sonarQube) {
+                stage('SonarQube') {
+                    echo "Running SonarQube..."
+
+                    def sonar_project_key = groupId + ":" + artifactId + "-" + branchNameHY
+                    def sonar_project_name = artifactId + "-" + branchNameHY
+
+                    echo "sonar_project_key: ${sonar_project_key}"
+                    echo "sonar_project_name: ${sonar_project_name}"
+
+                    sh "${mavenCmd} sonar:sonar -Dsonar.host.url=${sonarQube} ${mavenProfile} -Dsonar.projectKey=${sonar_project_key} -Dsonar.projectName=${sonar_project_name}"
+
+                }
+            } else {
+                echo "Skipping Running SonarQube..."
+            }
+
+            stage('Artifact Deploy') {
+                echo "Deploying artifact to Artifactory..."
+                sh "${mavenCmd} deploy -DskipTests=true -Dcheckstyle.skip=true ${mavenProfile}"
+            }
+        } else {
+            // Is the master branch
+
+            stage('Check release version on Artifactory') {
+                def artifactoryResponseCode = checkArtifactoryReleaseVersion {
+                    artCredential = artifactoryCredential
+                    repoUrl = artifactoryRepoURL
+                }
+
+                echo "Artifactory response status code: ${artifactoryResponseCode}"
+
+                if (artifactoryResponseCode != null && Constants.HTTP_STATUS_CODE_OK.equals(artifactoryResponseCode)) {
+                    echo "Artifact is avalaible for the pipeline on Artifactory"
+                } else {
+                    currentBuild.result = 'FAILURE'
+                    throw new hudson.AbortException('The artifact on Artifactory is not avalaible for the pipeline')
+                }
+
+            }
+
+        }
 
         stage('OpenShift Build') {
             echo "Building image on OpenShift..."
@@ -348,6 +414,103 @@ def runPPCJenkinsfile() {
 
 
 
+        if (branchType in params.testing.postdeploy.smokeTesting) {
+            tasks["smoke"] = {
+                stage('Smoke Tests') {
+                    echo "Running smoke tests..."
+
+                    def test_files_location = taurus_test_base_path + smoke_test_path + '**/*.yml'
+                    echo "Searching smoke tests with pattern: ${test_files_location}"
+
+                    def files = findFiles(glob: test_files_location)
+
+                    def testFilesNumber = files.length
+                    echo "Smoke test files found number: ${testFilesNumber}"
+
+                    files.eachWithIndex { file, index ->
+
+                        def isDirectory = files[index].directory
+
+                        if (!isDirectory) {
+                            echo "Executing smoke test file number #${index}: ${files[index].path}"
+
+                            //def bztScript = 'bzt -o scenarios.scenario-default.default-address=https://digitalservices.evobanco.com -o modules.gatling.java-opts=-Ddefault-address=https://digitalservices.evobanco.com ' + files[index].path  + ' -report --option=modules.console.disable=true'
+
+                            //sh "${bztScript}"
+                        }
+                    }
+                }
+            }
+        } else {
+            echo "Skipping smoke tests..."
+        }
+
+        if (branchType in params.testing.postdeploy.acceptanceTesting) {
+            tasks["acceptance"] = {
+                stage('Acceptance Tests') {
+                    echo "Running acceptance tests..."
+
+                    def test_files_location = taurus_test_base_path + acceptance_test_path + '**/*.yml'
+                    echo "Searching acceptance tests with pattern: ${test_files_location}"
+
+                    def files = findFiles(glob: test_files_location)
+
+                    def testFilesNumber = files.length
+                    echo "Acceptance test files found number: ${testFilesNumber}"
+
+                    files.eachWithIndex { file, index ->
+
+                        def isDirectory = files[index].directory
+
+                        if (!isDirectory) {
+                            echo "Executing security test file number #${index}: ${files[index].path}"
+
+                            //def bztScript = 'bzt -o scenarios.scenario-default.default-address=https://digitalservices.evobanco.com -o modules.gatling.java-opts=-Ddefault-address=https://digitalservices.evobanco.com ' + files[index].path  + ' -report --option=modules.console.disable=true'
+
+                            //sh "${bztScript}"
+                        }
+                    }
+                }
+            }
+        } else {
+            echo "Skipping acceptance tests..."
+        }
+
+        if (branchType in params.testing.postdeploy.securityTesting) {
+            tasks["security"] = {
+                stage('Security Tests') {
+                    echo "Running security tests..."
+
+                    def test_files_location = taurus_test_base_path + security_test_path + '**/*.yml'
+                    echo "Searching security tests with pattern: ${test_files_location}"
+
+                    def files = findFiles(glob: test_files_location)
+
+                    def testFilesNumber = files.length
+                    echo "Security test files found number: ${testFilesNumber}"
+
+                    files.eachWithIndex { file, index ->
+
+                        def isDirectory = files[index].directory
+
+                        if (!isDirectory) {
+                            echo "Executing security test file number #${index}: ${files[index].path}"
+
+                            //def bztScript = 'bzt -o scenarios.scenario-default.default-address=https://digitalservices.evobanco.com -o modules.gatling.java-opts=-Ddefault-address=https://digitalservices.evobanco.com ' + files[index].path  + ' -report --option=modules.console.disable=true'
+
+                            //sh "${bztScript}"
+                        }
+                    }
+                }
+            }
+        } else {
+            echo "Skipping security tests..."
+        }
+
+        node('taurus') { //taurus
+            checkout scm
+            parallel tasks
+        }
 
         if (branchType in params.testing.postdeploy.performanceTesting) {
             node('taurus') { //taurus
