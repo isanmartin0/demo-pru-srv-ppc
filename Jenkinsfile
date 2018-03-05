@@ -58,13 +58,14 @@ def runPPCJenkinsfile() {
     def security_test_path = '/security_test/'
 
 
-    def openshift_route_hostname = 'http://demo-pru-srv-develop.svcsdev.grupoevo.corp'
+    def openshift_route_hostname = ''
+    def openshift_route_hostname_with_protocol = ''
 
 
     echo "BEGIN PARALLEL PROJECT CONFIGURATION (PPC)"
 
 
-    node {
+    node('maven') {
 
         //sleep 10
         checkout scm
@@ -217,6 +218,171 @@ def runPPCJenkinsfile() {
         }
 
 
+
+        stage ('Prepare profiles') {
+            switch (branchType) {
+                case 'feature':
+                    echo "Detect feature type branch"
+                    envLabel="dev"
+                    if (params.maven.profileFeature) {
+                        mavenProfile = "-P${params.maven.profileFeature}"
+                    }
+                    if (params.spring.profileFeature) {
+                        springProfile = params.spring.profileFeature
+                    }
+                    break
+                case 'develop':
+                    echo "Detect develop type branch"
+                    envLabel="dev"
+                    if (params.maven.profileDevelop) {
+                        mavenProfile = "-P${params.maven.profileDevelop}"
+                    }
+                    if (params.spring.profileDevelop) {
+                        springProfile = params.spring.profileDevelop
+                    }
+                    break
+                case 'release':
+                    echo "Detect release type branch"
+                    envLabel="uat"
+                    if (params.maven.profileRelease) {
+                        mavenProfile = "-P${params.maven.profileRelease}"
+                    }
+                    if (params.spring.profileRelease) {
+                        springProfile = params.spring.profileRelease
+                    }
+                    break
+                case 'master':
+                    echo "Detect master type branch"
+                    envLabel="pro"
+                    if (params.maven.profileMaster) {
+                        mavenProfile = "-P${params.maven.profileMaster}"
+                    }
+                    if (params.spring.profileMaster) {
+                        springProfile = params.spring.profileMaster
+                    }
+                    break
+                case 'hotfix':
+                    echo "Detect hotfix type branch"
+                    envLabel="uat"
+                    if (params.maven.profileHotfix) {
+                        mavenProfile = "-P${params.maven.profileHotfix}"
+                    }
+                    if (params.spring.profileHotfix) {
+                        springProfile = params.spring.profileHotfix
+                    }
+                    break
+            }
+
+            echo "Maven profile selected: ${mavenProfile}"
+            echo "Spring profile selected: ${springProfile}"
+        }
+
+
+        if (branchName != 'master')
+        {
+            if (branchType in params.testing.predeploy.checkstyle) {
+                stage('Checkstyle') {
+                    echo "Running Checkstyle artifact..."
+                    sh "${mavenCmd} checkstyle:check -DskipTests=true ${mavenProfile}"
+                }
+            } else {
+                echo "Skipping Checkstyle..."
+            }
+
+            stage('Build') {
+                echo "Building artifact..."
+                sh "${mavenCmd} package -DskipTests=true -Dcheckstyle.skip=true ${mavenProfile}"
+            }
+
+            if (branchType in params.testing.predeploy.unitTesting) {
+                stage('Unit Tests') {
+                    echo "Running unit tests..."
+                    sh "${mavenCmd} verify -Dcheckstyle.skip=true ${mavenProfile}"
+                }
+            } else {
+                echo "Skipping unit tests..."
+            }
+
+            if (branchType in params.testing.predeploy.sonarQube) {
+                stage('SonarQube') {
+                    echo "Running SonarQube..."
+
+                    def sonar_project_key = groupId + ":" + artifactId + "-" + branchNameHY
+                    def sonar_project_name = artifactId + "-" + branchNameHY
+
+                    echo "sonar_project_key: ${sonar_project_key}"
+                    echo "sonar_project_name: ${sonar_project_name}"
+
+                    sh "${mavenCmd} sonar:sonar -Dsonar.host.url=${sonarQube} ${mavenProfile} -Dsonar.projectKey=${sonar_project_key} -Dsonar.projectName=${sonar_project_name}"
+
+                }
+            } else {
+                echo "Skipping Running SonarQube..."
+            }
+
+            stage('Artifact Deploy') {
+                echo "Deploying artifact to Artifactory..."
+                sh "${mavenCmd} deploy -DskipTests=true -Dcheckstyle.skip=true ${mavenProfile}"
+            }
+        } else {
+            // Is the master branch
+
+            stage('Check release version on Artifactory') {
+                def artifactoryResponseCode = checkArtifactoryReleaseVersion {
+                    artCredential = artifactoryCredential
+                    repoUrl = artifactoryRepoURL
+                }
+
+                echo "Artifactory response status code: ${artifactoryResponseCode}"
+
+                if (artifactoryResponseCode != null && Constants.HTTP_STATUS_CODE_OK.equals(artifactoryResponseCode)) {
+                    echo "Artifact is avalaible for the pipeline on Artifactory"
+                } else {
+                    currentBuild.result = 'FAILURE'
+                    throw new hudson.AbortException('The artifact on Artifactory is not avalaible for the pipeline')
+                }
+
+            }
+
+        }
+
+        stage('OpenShift Build') {
+            echo "Building image on OpenShift..."
+
+            openshiftCheckAndCreateProject {
+                oseCredential = openshiftCredential
+                cloudURL = openshiftURL
+                environment = envLabel
+                jenkinsNS = jenkinsNamespace
+                artCredential = artifactoryCredential
+                template = params.openshift.templatePath
+                branchHY = branchNameHY
+                branch_type = branchType
+                dockerRegistry = registry
+            }
+
+
+            openshiftEnvironmentVariables {
+                springProfileActive = springProfile
+                branchHY = branchNameHY
+                branch_type = branchType
+            }
+
+            openshiftBuildProject {
+                artCredential = artifactoryCredential
+                snapshotRepoUrl = artifactorySnapshotsURL
+                repoUrl = artifactoryRepoURL
+                javaOpts = ''
+                springProfileActive = springProfile
+                bc = params.openshift.buildConfigName
+                is = params.openshift.imageStreamName
+                branchHY = branchNameHY
+                branch_type = branchType
+            }
+
+
+        }
+
     } // end of node
 
     def deploy = 'Yes'
@@ -229,13 +395,126 @@ def runPPCJenkinsfile() {
     }
 
     if (deploy == 'Yes') {
+        node {
+            checkout scm
+            stage('OpenShift Deploy') {
+                echo "Deploying on OpenShift..."
+
+                openshift_route_hostname = openshiftDeployProject {
+                    branchHY = branchNameHY
+                    branch_type = branchType
+                }
+
+                openshift_route_hostname_with_protocol = Utils.getRouteHostnameWithProtocol(openshift_route_hostname, false)
+
+            }
+        }
+
 
         echo "Openshift route hostname: ${openshift_route_hostname}"
+         echo "Openshift route hostname (with protocol): ${openshift_route_hostname_with_protocol}"
 
         def tasks = [:]
 
 
 
+        if (branchType in params.testing.postdeploy.smokeTesting) {
+            tasks["smoke"] = {
+                stage('Smoke Tests') {
+                    echo "Running smoke tests..."
+
+                    def test_files_location = taurus_test_base_path + smoke_test_path + '**/*.yml'
+                    echo "Searching smoke tests with pattern: ${test_files_location}"
+
+                    def files = findFiles(glob: test_files_location)
+
+                    def testFilesNumber = files.length
+                    echo "Smoke test files found number: ${testFilesNumber}"
+
+                    files.eachWithIndex { file, index ->
+
+                        def isDirectory = files[index].directory
+
+                        if (!isDirectory) {
+                            echo "Executing smoke test file number #${index}: ${files[index].path}"
+
+                            //def bztScript = 'bzt -o scenarios.scenario-default.default-address=https://digitalservices.evobanco.com -o modules.gatling.java-opts=-Ddefault-address=https://digitalservices.evobanco.com ' + files[index].path  + ' -report --option=modules.console.disable=true'
+
+                            //sh "${bztScript}"
+                        }
+                    }
+                }
+            }
+        } else {
+            echo "Skipping smoke tests..."
+        }
+
+        if (branchType in params.testing.postdeploy.acceptanceTesting) {
+            tasks["acceptance"] = {
+                stage('Acceptance Tests') {
+                    echo "Running acceptance tests..."
+
+                    def test_files_location = taurus_test_base_path + acceptance_test_path + '**/*.yml'
+                    echo "Searching acceptance tests with pattern: ${test_files_location}"
+
+                    def files = findFiles(glob: test_files_location)
+
+                    def testFilesNumber = files.length
+                    echo "Acceptance test files found number: ${testFilesNumber}"
+
+                    files.eachWithIndex { file, index ->
+
+                        def isDirectory = files[index].directory
+
+                        if (!isDirectory) {
+                            echo "Executing security test file number #${index}: ${files[index].path}"
+
+                            //def bztScript = 'bzt -o scenarios.scenario-default.default-address=https://digitalservices.evobanco.com -o modules.gatling.java-opts=-Ddefault-address=https://digitalservices.evobanco.com ' + files[index].path  + ' -report --option=modules.console.disable=true'
+
+                            //sh "${bztScript}"
+                        }
+                    }
+                }
+            }
+        } else {
+            echo "Skipping acceptance tests..."
+        }
+
+        if (branchType in params.testing.postdeploy.securityTesting) {
+            tasks["security"] = {
+                stage('Security Tests') {
+                    echo "Running security tests..."
+
+                    def test_files_location = taurus_test_base_path + security_test_path + '**/*.yml'
+                    echo "Searching security tests with pattern: ${test_files_location}"
+
+                    def files = findFiles(glob: test_files_location)
+
+                    def testFilesNumber = files.length
+                    echo "Security test files found number: ${testFilesNumber}"
+
+                    files.eachWithIndex { file, index ->
+
+                        def isDirectory = files[index].directory
+
+                        if (!isDirectory) {
+                            echo "Executing security test file number #${index}: ${files[index].path}"
+
+                            //def bztScript = 'bzt -o scenarios.scenario-default.default-address=https://digitalservices.evobanco.com -o modules.gatling.java-opts=-Ddefault-address=https://digitalservices.evobanco.com ' + files[index].path  + ' -report --option=modules.console.disable=true'
+
+                            //sh "${bztScript}"
+                        }
+                    }
+                }
+            }
+        } else {
+            echo "Skipping security tests..."
+        }
+
+        node('taurus') { //taurus
+            checkout scm
+            parallel tasks
+        }
 
         if (branchType in params.testing.postdeploy.performanceTesting) {
             node('taurus') { //taurus
@@ -261,7 +540,7 @@ def runPPCJenkinsfile() {
                             echo "Setting taurus scenarios.scenario-default.default-address to ${openshift_route_hostname}"
                             echo "Setting taurus modules.gatling.java-opts to ${openshift_route_hostname}"
 
-                            def bztScript = 'bzt -o scenarios.scenario-default.default-address=' + openshift_route_hostname + ' -o modules.gatling.java-opts=-Ddefault-address=' + openshift_route_hostname + ' ' + files[index].path  + ' -report --option=modules.console.disable=true'
+                            def bztScript = 'bzt -o scenarios.scenario-default.default-address=' + openshift_route_hostname_with_protocol + ' -o modules.gatling.java-opts=-Ddefault-address=' + openshift_route_hostname_with_protocol + ' ' + files[index].path  + ' -report --option=modules.console.disable=true'
 
                             echo "Executing script ${bztScript}"
                             sh "${bztScript}"
