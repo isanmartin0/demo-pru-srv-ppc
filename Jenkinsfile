@@ -467,12 +467,11 @@ def runPPCJenkinsfile() {
                     echo "Test files number: ${testFilesNumber}"
 
                     files.eachWithIndex { file, index ->
-                        echo "Fichero #${index}: ${files[index].name}"
 
                         def isDirectory = files[index].directory
-                        echo "is directory: ${isDirectory}"
+
                         if (!isDirectory) {
-                            echo "Es un fichero"
+                            echo "Executing performance test file number #${index}: ${files[index].path}"
 
                             //def bztScript = 'bzt -o scenarios.scenario-default.default-address=https://digitalservices.evobanco.com -o modules.gatling.java-opts=-Ddefault-address=https://digitalservices.evobanco.com ' + files[index].path  + ' -report --option=modules.console.disable=true'
 
