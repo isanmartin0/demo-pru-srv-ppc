@@ -58,13 +58,13 @@ def runPPCJenkinsfile() {
     def security_test_path = '/security_test/'
 
 
-    def openshift_route_hostname = ''
+    def openshift_route_hostname = 'demo-pru-srv-develop.svcsdev.grupoevo.corp'
 
 
     echo "BEGIN PARALLEL PROJECT CONFIGURATION (PPC)"
 
 
-    node('maven') {
+    node {
 
         //sleep 10
         checkout scm
@@ -217,105 +217,6 @@ def runPPCJenkinsfile() {
         }
 
 
-
-        stage ('Prepare profiles') {
-            switch (branchType) {
-                case 'feature':
-                    echo "Detect feature type branch"
-                    envLabel="dev"
-                    if (params.maven.profileFeature) {
-                        mavenProfile = "-P${params.maven.profileFeature}"
-                    }
-                    if (params.spring.profileFeature) {
-                        springProfile = params.spring.profileFeature
-                    }
-                    break
-                case 'develop':
-                    echo "Detect develop type branch"
-                    envLabel="dev"
-                    if (params.maven.profileDevelop) {
-                        mavenProfile = "-P${params.maven.profileDevelop}"
-                    }
-                    if (params.spring.profileDevelop) {
-                        springProfile = params.spring.profileDevelop
-                    }
-                    break
-                case 'release':
-                    echo "Detect release type branch"
-                    envLabel="uat"
-                    if (params.maven.profileRelease) {
-                        mavenProfile = "-P${params.maven.profileRelease}"
-                    }
-                    if (params.spring.profileRelease) {
-                        springProfile = params.spring.profileRelease
-                    }
-                    break
-                case 'master':
-                    echo "Detect master type branch"
-                    envLabel="pro"
-                    if (params.maven.profileMaster) {
-                        mavenProfile = "-P${params.maven.profileMaster}"
-                    }
-                    if (params.spring.profileMaster) {
-                        springProfile = params.spring.profileMaster
-                    }
-                    break
-                case 'hotfix':
-                    echo "Detect hotfix type branch"
-                    envLabel="uat"
-                    if (params.maven.profileHotfix) {
-                        mavenProfile = "-P${params.maven.profileHotfix}"
-                    }
-                    if (params.spring.profileHotfix) {
-                        springProfile = params.spring.profileHotfix
-                    }
-                    break
-            }
-
-            echo "Maven profile selected: ${mavenProfile}"
-            echo "Spring profile selected: ${springProfile}"
-        }
-
-
-
-
-        stage('OpenShift Build') {
-            echo "Building image on OpenShift..."
-
-            openshiftCheckAndCreateProject {
-                oseCredential = openshiftCredential
-                cloudURL = openshiftURL
-                environment = envLabel
-                jenkinsNS = jenkinsNamespace
-                artCredential = artifactoryCredential
-                template = params.openshift.templatePath
-                branchHY = branchNameHY
-                branch_type = branchType
-                dockerRegistry = registry
-            }
-
-
-            openshiftEnvironmentVariables {
-                springProfileActive = springProfile
-                branchHY = branchNameHY
-                branch_type = branchType
-            }
-
-            openshiftBuildProject {
-                artCredential = artifactoryCredential
-                snapshotRepoUrl = artifactorySnapshotsURL
-                repoUrl = artifactoryRepoURL
-                javaOpts = ''
-                springProfileActive = springProfile
-                bc = params.openshift.buildConfigName
-                is = params.openshift.imageStreamName
-                branchHY = branchNameHY
-                branch_type = branchType
-            }
-
-
-        }
-
     } // end of node
 
     def deploy = 'Yes'
@@ -328,19 +229,6 @@ def runPPCJenkinsfile() {
     }
 
     if (deploy == 'Yes') {
-        node {
-            checkout scm
-            stage('OpenShift Deploy') {
-                echo "Deploying on OpenShift..."
-
-                openshift_route_hostname = openshiftDeployProject {
-                    branchHY = branchNameHY
-                    branch_type = branchType
-                }
-
-            }
-        }
-
 
         echo "Openshift route hostname: ${openshift_route_hostname}"
 
