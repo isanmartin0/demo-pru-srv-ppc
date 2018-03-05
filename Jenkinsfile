@@ -58,7 +58,7 @@ def runPPCJenkinsfile() {
     def security_test_path = '/security_test/'
 
 
-    def openshift_route_hostname = 'demo-pru-srv-develop.svcsdev.grupoevo.corp'
+    def openshift_route_hostname = 'http://demo-pru-srv-develop.svcsdev.grupoevo.corp'
 
 
     echo "BEGIN PARALLEL PROJECT CONFIGURATION (PPC)"
