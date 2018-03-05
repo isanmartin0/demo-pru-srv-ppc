@@ -438,9 +438,12 @@ def runPPCJenkinsfile() {
                         if (!isDirectory) {
                             echo "Executing smoke test file number #${index}: ${files[index].path}"
 
-                            //def bztScript = 'bzt -o scenarios.scenario-default.default-address=https://digitalservices.evobanco.com -o modules.gatling.java-opts=-Ddefault-address=https://digitalservices.evobanco.com ' + files[index].path  + ' -report --option=modules.console.disable=true'
+                            echo "Setting taurus scenarios.scenario-default.default-address to ${openshift_route_hostname_with_protocol}"
+                            echo "Setting taurus modules.gatling.java-opts to ${openshift_route_hostname_with_protocol}"
 
-                            //sh "${bztScript}"
+                            def bztScript = 'bzt -o scenarios.scenario-default.default-address=' + openshift_route_hostname_with_protocol + ' -o modules.gatling.java-opts=-Ddefault-address=' + openshift_route_hostname_with_protocol + ' ' + files[index].path  + ' -report --option=modules.console.disable=true'
+
+                            echo "Executing script ${bztScript}"
                         }
                     }
                 }
@@ -469,9 +472,12 @@ def runPPCJenkinsfile() {
                         if (!isDirectory) {
                             echo "Executing security test file number #${index}: ${files[index].path}"
 
-                            //def bztScript = 'bzt -o scenarios.scenario-default.default-address=https://digitalservices.evobanco.com -o modules.gatling.java-opts=-Ddefault-address=https://digitalservices.evobanco.com ' + files[index].path  + ' -report --option=modules.console.disable=true'
+                            echo "Setting taurus scenarios.scenario-default.default-address to ${openshift_route_hostname_with_protocol}"
+                            echo "Setting taurus modules.gatling.java-opts to ${openshift_route_hostname_with_protocol}"
 
-                            //sh "${bztScript}"
+                            def bztScript = 'bzt -o scenarios.scenario-default.default-address=' + openshift_route_hostname_with_protocol + ' -o modules.gatling.java-opts=-Ddefault-address=' + openshift_route_hostname_with_protocol + ' ' + files[index].path  + ' -report --option=modules.console.disable=true'
+
+                            echo "Executing script ${bztScript}"
                         }
                     }
                 }
@@ -500,9 +506,12 @@ def runPPCJenkinsfile() {
                         if (!isDirectory) {
                             echo "Executing security test file number #${index}: ${files[index].path}"
 
-                            //def bztScript = 'bzt -o scenarios.scenario-default.default-address=https://digitalservices.evobanco.com -o modules.gatling.java-opts=-Ddefault-address=https://digitalservices.evobanco.com ' + files[index].path  + ' -report --option=modules.console.disable=true'
+                            echo "Setting taurus scenarios.scenario-default.default-address to ${openshift_route_hostname_with_protocol}"
+                            echo "Setting taurus modules.gatling.java-opts to ${openshift_route_hostname_with_protocol}"
 
-                            //sh "${bztScript}"
+                            def bztScript = 'bzt -o scenarios.scenario-default.default-address=' + openshift_route_hostname_with_protocol + ' -o modules.gatling.java-opts=-Ddefault-address=' + openshift_route_hostname_with_protocol + ' ' + files[index].path  + ' -report --option=modules.console.disable=true'
+
+                            echo "Executing script ${bztScript}"
                         }
                     }
                 }
@@ -537,8 +546,8 @@ def runPPCJenkinsfile() {
                         if (!isDirectory) {
                             echo "Executing performance test file number #${index}: ${files[index].path}"
 
-                            echo "Setting taurus scenarios.scenario-default.default-address to ${openshift_route_hostname}"
-                            echo "Setting taurus modules.gatling.java-opts to ${openshift_route_hostname}"
+                            echo "Setting taurus scenarios.scenario-default.default-address to ${openshift_route_hostname_with_protocol}"
+                            echo "Setting taurus modules.gatling.java-opts to ${openshift_route_hostname_with_protocol}"
 
                             def bztScript = 'bzt -o scenarios.scenario-default.default-address=' + openshift_route_hostname_with_protocol + ' -o modules.gatling.java-opts=-Ddefault-address=' + openshift_route_hostname_with_protocol + ' ' + files[index].path  + ' -report --option=modules.console.disable=true'
 
