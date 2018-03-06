@@ -46,6 +46,7 @@ testing:
       - release
       - hotfix
     acceptanceTesting:
+      - develop
       - release
 
 notifications:
