@@ -40,14 +40,12 @@ testing:
       - release
       - master
     securityTesting:
-      - develop
       - release
     performanceTesting:
       - develop
       - release
       - hotfix
     acceptanceTesting:
-      - develop
       - release
 
 notifications:
