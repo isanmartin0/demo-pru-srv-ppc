@@ -491,6 +491,7 @@ def runPPCJenkinsfile() {
 
                                 try {
                                     echo "Executing script ${bztScript}"
+                                    throw new hudson.AbortException('Version of artifact in pom is not allowed for this type of branch')
                                     sh "${bztScript}"
                                 } catch (exc) {
                                     unstable 'There is an error executing acceptance test'
