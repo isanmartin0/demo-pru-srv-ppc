@@ -420,31 +420,33 @@ def runPPCJenkinsfile() {
 
         if (branchType in params.testing.postdeploy.smokeTesting) {
             tasks["smoke"] = {
-                stage('Smoke Tests') {
-                    echo "Running smoke tests..."
+                node('taurus') { //taurus
+                    stage('Smoke Tests') {
+                        echo "Running smoke tests..."
 
-                    def test_files_location = taurus_test_base_path + smoke_test_path + '**/*.yml'
-                    echo "Searching smoke tests with pattern: ${test_files_location}"
+                        def test_files_location = taurus_test_base_path + smoke_test_path + '**/*.yml'
+                        echo "Searching smoke tests with pattern: ${test_files_location}"
 
-                    def files = findFiles(glob: test_files_location)
+                        def files = findFiles(glob: test_files_location)
 
-                    def testFilesNumber = files.length
-                    echo "Smoke test files found number: ${testFilesNumber}"
+                        def testFilesNumber = files.length
+                        echo "Smoke test files found number: ${testFilesNumber}"
 
-                    files.eachWithIndex { file, index ->
+                        files.eachWithIndex { file, index ->
 
-                        def isDirectory = files[index].directory
+                            def isDirectory = files[index].directory
 
-                        if (!isDirectory) {
-                            echo "Executing smoke test file number #${index}: ${files[index].path}"
+                            if (!isDirectory) {
+                                echo "Executing smoke test file number #${index}: ${files[index].path}"
 
-                            echo "Setting taurus scenarios.scenario-default.default-address to ${openshift_route_hostname_with_protocol}"
-                            echo "Setting taurus modules.gatling.java-opts to ${openshift_route_hostname_with_protocol}"
+                                echo "Setting taurus scenarios.scenario-default.default-address to ${openshift_route_hostname_with_protocol}"
+                                echo "Setting taurus modules.gatling.java-opts to ${openshift_route_hostname_with_protocol}"
 
-                            def bztScript = 'bzt -o scenarios.scenario-default.default-address=' + openshift_route_hostname_with_protocol + ' -o modules.gatling.java-opts=-Ddefault-address=' + openshift_route_hostname_with_protocol + ' ' + files[index].path  + ' -report --option=modules.console.disable=true'
+                                def bztScript = 'bzt -o scenarios.scenario-default.default-address=' + openshift_route_hostname_with_protocol + ' -o modules.gatling.java-opts=-Ddefault-address=' + openshift_route_hostname_with_protocol + ' ' + files[index].path  + ' -report --option=modules.console.disable=true'
 
-                            echo "Executing script ${bztScript}"
-                            sh "${bztScript}"
+                                echo "Executing script ${bztScript}"
+                                sh "${bztScript}"
+                            }
                         }
                     }
                 }
@@ -455,31 +457,33 @@ def runPPCJenkinsfile() {
 
         if (branchType in params.testing.postdeploy.acceptanceTesting) {
             tasks["acceptance"] = {
-                stage('Acceptance Tests') {
-                    echo "Running acceptance tests..."
+                node('taurus') { //taurus
+                    stage('Acceptance Tests') {
+                        echo "Running acceptance tests..."
 
-                    def test_files_location = taurus_test_base_path + acceptance_test_path + '**/*.yml'
-                    echo "Searching acceptance tests with pattern: ${test_files_location}"
+                        def test_files_location = taurus_test_base_path + acceptance_test_path + '**/*.yml'
+                        echo "Searching acceptance tests with pattern: ${test_files_location}"
 
-                    def files = findFiles(glob: test_files_location)
+                        def files = findFiles(glob: test_files_location)
 
-                    def testFilesNumber = files.length
-                    echo "Acceptance test files found number: ${testFilesNumber}"
+                        def testFilesNumber = files.length
+                        echo "Acceptance test files found number: ${testFilesNumber}"
 
-                    files.eachWithIndex { file, index ->
+                        files.eachWithIndex { file, index ->
 
-                        def isDirectory = files[index].directory
+                            def isDirectory = files[index].directory
 
-                        if (!isDirectory) {
-                            echo "Executing security test file number #${index}: ${files[index].path}"
+                            if (!isDirectory) {
+                                echo "Executing security test file number #${index}: ${files[index].path}"
 
-                            echo "Setting taurus scenarios.scenario-default.default-address to ${openshift_route_hostname_with_protocol}"
-                            echo "Setting taurus modules.gatling.java-opts to ${openshift_route_hostname_with_protocol}"
+                                echo "Setting taurus scenarios.scenario-default.default-address to ${openshift_route_hostname_with_protocol}"
+                                echo "Setting taurus modules.gatling.java-opts to ${openshift_route_hostname_with_protocol}"
 
-                            def bztScript = 'bzt -o scenarios.scenario-default.default-address=' + openshift_route_hostname_with_protocol + ' -o modules.gatling.java-opts=-Ddefault-address=' + openshift_route_hostname_with_protocol + ' ' + files[index].path  + ' -report --option=modules.console.disable=true'
+                                def bztScript = 'bzt -o scenarios.scenario-default.default-address=' + openshift_route_hostname_with_protocol + ' -o modules.gatling.java-opts=-Ddefault-address=' + openshift_route_hostname_with_protocol + ' ' + files[index].path  + ' -report --option=modules.console.disable=true'
 
-                            echo "Executing script ${bztScript}"
-                            sh "${bztScript}"
+                                echo "Executing script ${bztScript}"
+                                sh "${bztScript}"
+                            }
                         }
                     }
                 }
@@ -490,32 +494,34 @@ def runPPCJenkinsfile() {
 
         if (branchType in params.testing.postdeploy.securityTesting) {
             tasks["security"] = {
-                stage('Security Tests') {
-                    echo "Running security tests..."
+                node('taurus') { //taurus
+                    stage('Security Tests') {
+                        echo "Running security tests..."
 
-                    def test_files_location = taurus_test_base_path + security_test_path + '**/*.yml'
-                    echo "Searching security tests with pattern: ${test_files_location}"
+                        def test_files_location = taurus_test_base_path + security_test_path + '**/*.yml'
+                        echo "Searching security tests with pattern: ${test_files_location}"
 
-                    def files = findFiles(glob: test_files_location)
+                        def files = findFiles(glob: test_files_location)
 
-                    def testFilesNumber = files.length
-                    echo "Security test files found number: ${testFilesNumber}"
+                        def testFilesNumber = files.length
+                        echo "Security test files found number: ${testFilesNumber}"
 
-                    files.eachWithIndex { file, index ->
+                        files.eachWithIndex { file, index ->
 
-                        def isDirectory = files[index].directory
+                            def isDirectory = files[index].directory
 
-                        if (!isDirectory) {
-                            echo "Executing security test file number #${index}: ${files[index].path}"
+                            if (!isDirectory) {
+                                echo "Executing security test file number #${index}: ${files[index].path}"
 
-                            echo "Setting taurus scenarios.scenario-default.default-address to ${openshift_route_hostname_with_protocol}"
-                            echo "Setting taurus modules.gatling.java-opts to ${openshift_route_hostname_with_protocol}"
+                                echo "Setting taurus scenarios.scenario-default.default-address to ${openshift_route_hostname_with_protocol}"
+                                echo "Setting taurus modules.gatling.java-opts to ${openshift_route_hostname_with_protocol}"
 
-                            def bztScript = 'bzt -o scenarios.scenario-default.default-address=' + openshift_route_hostname_with_protocol + ' -o modules.gatling.java-opts=-Ddefault-address=' + openshift_route_hostname_with_protocol + ' ' + files[index].path  + ' -report --option=modules.console.disable=true'
+                                def bztScript = 'bzt -o scenarios.scenario-default.default-address=' + openshift_route_hostname_with_protocol + ' -o modules.gatling.java-opts=-Ddefault-address=' + openshift_route_hostname_with_protocol + ' ' + files[index].path  + ' -report --option=modules.console.disable=true'
 
-                            echo "Executing script ${bztScript}"
-                            sh "${bztScript}"
+                                echo "Executing script ${bztScript}"
+                                sh "${bztScript}"
 
+                            }
                         }
                     }
                 }
@@ -524,10 +530,10 @@ def runPPCJenkinsfile() {
             echo "Skipping security tests..."
         }
 
-        node('taurus') { //taurus
-            checkout scm
-            parallel tasks
-        }
+
+        checkout scm
+        parallel tasks
+
 
         if (branchType in params.testing.postdeploy.performanceTesting) {
             node('taurus') { //taurus
