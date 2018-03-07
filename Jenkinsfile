@@ -534,8 +534,8 @@ def runPPCJenkinsfile() {
         }
 
 
-        //Smoke,
-        parallel tasks
+        //Smoke, acceptance and security tests
+        tasks
 
 
         if (branchType in params.testing.postdeploy.performanceTesting) {
