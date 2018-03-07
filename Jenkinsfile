@@ -449,7 +449,7 @@ def runPPCJenkinsfile() {
                                     echo "Executing script ${bztScript}"
                                     sh "${bztScript}"
                                 } catch (exc) {
-                                    echo 'There is an error executing smoke test'
+                                    unstable 'There is an error executing smoke test'
                                     def exc_message = exc.message
                                     echo "${exc_message}"
                                 }
@@ -493,7 +493,7 @@ def runPPCJenkinsfile() {
                                     echo "Executing script ${bztScript}"
                                     sh "${bztScript}"
                                 } catch (exc) {
-                                    echo 'There is an error executing acceptance test'
+                                    unstable 'There is an error executing acceptance test'
                                     def exc_message = exc.message
                                     echo "${exc_message}"
                                 }
@@ -537,7 +537,7 @@ def runPPCJenkinsfile() {
                                     echo "Executing script ${bztScript}"
                                     sh "${bztScript}"
                                 } catch (exc) {
-                                    echo 'There is an error executing security test'
+                                    unstable 'There is an error executing security test'
                                     def exc_message = exc.message
                                     echo "${exc_message}"
                                 }
@@ -585,7 +585,7 @@ def runPPCJenkinsfile() {
                                 echo "Executing script ${bztScript}"
                                 sh "${bztScript}"
                             } catch (exc) {
-                                echo 'There is an error executing performance test'
+                                unstable 'There is an error executing performance test'
                                 def exc_message = exc.message
                                 echo "${exc_message}"
                             }
