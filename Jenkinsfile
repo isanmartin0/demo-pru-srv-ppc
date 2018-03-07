@@ -422,6 +422,7 @@ def runPPCJenkinsfile() {
             tasks["smoke"] = {
                 node('taurus') { //taurus
                     stage('Smoke Tests') {
+                        checkout scm
                         echo "Running smoke tests..."
 
                         def test_files_location = taurus_test_base_path + smoke_test_path + '**/*.yml'
@@ -459,6 +460,7 @@ def runPPCJenkinsfile() {
             tasks["acceptance"] = {
                 node('taurus') { //taurus
                     stage('Acceptance Tests') {
+                        checkout scm
                         echo "Running acceptance tests..."
 
                         def test_files_location = taurus_test_base_path + acceptance_test_path + '**/*.yml'
@@ -496,6 +498,7 @@ def runPPCJenkinsfile() {
             tasks["security"] = {
                 node('taurus') { //taurus
                     stage('Security Tests') {
+                        checkout scm
                         echo "Running security tests..."
 
                         def test_files_location = taurus_test_base_path + security_test_path + '**/*.yml'
@@ -531,7 +534,7 @@ def runPPCJenkinsfile() {
         }
 
 
-        checkout scm
+        //Smoke,
         parallel tasks
 
 
