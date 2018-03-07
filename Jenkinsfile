@@ -445,8 +445,14 @@ def runPPCJenkinsfile() {
 
                                 def bztScript = 'bzt -o scenarios.scenario-default.default-address=' + openshift_route_hostname_with_protocol + ' -o modules.gatling.java-opts=-Ddefault-address=' + openshift_route_hostname_with_protocol + ' ' + files[index].path  + ' -report --option=modules.console.disable=true'
 
-                                echo "Executing script ${bztScript}"
-                                sh "${bztScript}"
+                                try {
+                                    echo "Executing script ${bztScript}"
+                                    sh "${bztScript}"
+                                } catch (exc) {
+                                    echo 'There is an error executing smoke test'
+                                    def exc_message = exc.message
+                                    echo "${exc_message}"
+                                }
                             }
                         }
                     }
@@ -476,15 +482,21 @@ def runPPCJenkinsfile() {
                             def isDirectory = files[index].directory
 
                             if (!isDirectory) {
-                                echo "Executing security test file number #${index}: ${files[index].path}"
+                                echo "Executing acceptance test file number #${index}: ${files[index].path}"
 
                                 echo "Setting taurus scenarios.scenario-default.default-address to ${openshift_route_hostname_with_protocol}"
                                 echo "Setting taurus modules.gatling.java-opts to ${openshift_route_hostname_with_protocol}"
 
                                 def bztScript = 'bzt -o scenarios.scenario-default.default-address=' + openshift_route_hostname_with_protocol + ' -o modules.gatling.java-opts=-Ddefault-address=' + openshift_route_hostname_with_protocol + ' ' + files[index].path  + ' -report --option=modules.console.disable=true'
 
-                                echo "Executing script ${bztScript}"
-                                sh "${bztScript}"
+                                try {
+                                    echo "Executing script ${bztScript}"
+                                    sh "${bztScript}"
+                                } catch (exc) {
+                                    echo 'There is an error executing acceptance test'
+                                    def exc_message = exc.message
+                                    echo "${exc_message}"
+                                }
                             }
                         }
                     }
@@ -521,9 +533,14 @@ def runPPCJenkinsfile() {
 
                                 def bztScript = 'bzt -o scenarios.scenario-default.default-address=' + openshift_route_hostname_with_protocol + ' -o modules.gatling.java-opts=-Ddefault-address=' + openshift_route_hostname_with_protocol + ' ' + files[index].path  + ' -report --option=modules.console.disable=true'
 
-                                echo "Executing script ${bztScript}"
-                                sh "${bztScript}"
-
+                                try {
+                                    echo "Executing script ${bztScript}"
+                                    sh "${bztScript}"
+                                } catch (exc) {
+                                    echo 'There is an error executing security test'
+                                    def exc_message = exc.message
+                                    echo "${exc_message}"
+                                }
                             }
                         }
                     }
@@ -534,8 +551,8 @@ def runPPCJenkinsfile() {
         }
 
 
-        //Smoke, acceptance and security tests
-        tasks
+        //Executing smoke, acceptance and security tests in parallel
+        parallel tasks
 
 
         if (branchType in params.testing.postdeploy.performanceTesting) {
@@ -564,8 +581,14 @@ def runPPCJenkinsfile() {
 
                             def bztScript = 'bzt -o scenarios.scenario-default.default-address=' + openshift_route_hostname_with_protocol + ' -o modules.gatling.java-opts=-Ddefault-address=' + openshift_route_hostname_with_protocol + ' ' + files[index].path  + ' -report --option=modules.console.disable=true'
 
-                            echo "Executing script ${bztScript}"
-                            sh "${bztScript}"
+                            try {
+                                echo "Executing script ${bztScript}"
+                                sh "${bztScript}"
+                            } catch (exc) {
+                                echo 'There is an error executing performance test'
+                                def exc_message = exc.message
+                                echo "${exc_message}"
+                            }
                         }
 
                     }
