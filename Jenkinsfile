@@ -387,6 +387,35 @@ def runPPCJenkinsfile() {
 
     def deploy = 'Yes'
 
+    //Parameters timeout deploy answer
+
+    int timeoutConfirmDeployTime = 0
+    echo "params.timeoutConfirmDeploy: ${params.timeoutConfirmDeploy}"
+    Boolean timeoutConfirmDeploy = false
+    if (params.timeoutConfirmDeploy != null) {
+        timeoutConfirmDeploy = params.timeoutConfirmDeploy.toBoolean()
+    }
+
+    echo "params.timeoutConfirmDeployTime: ${params.timeoutConfirmDeployTime}"
+    echo "params.timeoutConfirmDeployUnit: ${params.timeoutConfirmDeployUnit}"
+
+    String timeoutConfirmDeployTimeParam = params.timeoutConfirmDeployTime
+    if (timeoutConfirmDeployTimeParam != null && timeoutConfirmDeployTimeParam.isInteger()) {
+        timeoutConfirmDeployTime = timeoutConfirmDeployTimeParam as Integer
+    }
+
+    String timeoutConfirmDeployUnit = 'MINUTES'
+    if (params.timeoutConfirmDeployUnit != null && ("SECONDS".equals(params.timeoutConfirmDeployUnit.toUpper)
+    || "MINUTES".equals(params.timeoutConfirmDeployUnit.toUpper)
+    || "HOURS".equals(params.timeoutConfirmDeployUnit.toUpper)
+    || "DAYS".equals(params.timeoutConfirmDeployUnit.toUpper))) {
+        timeoutConfirmDeployUnit = params.timeoutConfirmDeployUnit.toUpper
+    }
+
+    echo "timeoutConfirmDeploy value: ${timeoutConfirmDeploy}"
+    echo "timeoutConfirmDeployTime value: ${timeoutConfirmDeployTime}"
+    echo "timeoutConfirmDeployUnit value: ${timeoutConfirmDeployUnit}"
+
     if (branchType in params.confirmDeploy) {
         stage('Decide on Deploying') {
             timeout(time:30, unit:'SECONDS') {
