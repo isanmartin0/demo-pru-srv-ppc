@@ -422,18 +422,25 @@ def runPPCJenkinsfile() {
     echo "timeoutConfirmDeployUnit value: ${timeoutConfirmDeployUnit}"
 
     if (branchType in params.confirmDeploy) {
-        stage('Decide on Deploying') {
-            if (timeoutConfirmDeploy && timeoutConfirmDeployTime > 0 && isTimeoutConfirmDeployUnitValid) {
-                //Wrap input with timeout
-                timeout(time:timeoutConfirmDeployTime, unit:"${timeoutConfirmDeployUnit}") {
+        try {
+            stage('Decide on Deploying') {
+                if (timeoutConfirmDeploy && timeoutConfirmDeployTime > 0 && isTimeoutConfirmDeployUnitValid) {
+                    //Wrap input with timeout
+                    timeout(time:timeoutConfirmDeployTime, unit:"${timeoutConfirmDeployUnit}") {
+                        deploy = input message: 'Waiting for user approval',
+                            parameters: [choice(name: 'Continue and deploy?', choices: 'No\nYes', description: 'Choose "Yes" if you want to deploy this build')]
+                    }
+                } else {
+                    //Input without timeout
                     deploy = input message: 'Waiting for user approval',
                         parameters: [choice(name: 'Continue and deploy?', choices: 'No\nYes', description: 'Choose "Yes" if you want to deploy this build')]
-                }
-            } else {
-                //Input without timeout
-                deploy = input message: 'Waiting for user approval',
-                    parameters: [choice(name: 'Continue and deploy?', choices: 'No\nYes', description: 'Choose "Yes" if you want to deploy this build')]
 
+                }
+            }
+        } catch (err) {
+            def user = err.getCauses()[0].getUser()
+            if('SYSTEM' == user.toString()) { //timeout
+                currentBuild.result = "FAILED"
             }
         }
     }
