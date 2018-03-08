@@ -65,7 +65,7 @@ def runPPCJenkinsfile() {
     echo "BEGIN PARALLEL PROJECT CONFIGURATION (PPC)"
 
 
-    node('mvn') {
+    node('maven') {
 
         //sleep 10
         checkout scm
