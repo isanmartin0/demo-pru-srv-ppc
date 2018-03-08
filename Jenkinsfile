@@ -405,11 +405,11 @@ def runPPCJenkinsfile() {
     }
 
     String timeoutConfirmDeployUnit = 'MINUTES'
-    if (params.timeoutConfirmDeployUnit != null && ("SECONDS".equals(params.timeoutConfirmDeployUnit.toUpper)
-    || "MINUTES".equals(params.timeoutConfirmDeployUnit.toUpper)
-    || "HOURS".equals(params.timeoutConfirmDeployUnit.toUpper)
-    || "DAYS".equals(params.timeoutConfirmDeployUnit.toUpper))) {
-        timeoutConfirmDeployUnit = params.timeoutConfirmDeployUnit.toUpper
+    if (params.timeoutConfirmDeployUnit != null && ("SECONDS".equals(params.timeoutConfirmDeployUnit.toUpperCase())
+    || "MINUTES".equals(params.timeoutConfirmDeployUnit.toUpperCase())
+    || "HOURS".equals(params.timeoutConfirmDeployUnit.toUpperCase())
+    || "DAYS".equals(params.timeoutConfirmDeployUnit.toUpperCase()))) {
+        timeoutConfirmDeployUnit = params.timeoutConfirmDeployUnit.toUpperCase()
     }
 
     echo "timeoutConfirmDeploy value: ${timeoutConfirmDeploy}"
