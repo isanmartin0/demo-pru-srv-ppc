@@ -406,7 +406,10 @@ def runPPCJenkinsfile() {
 
     String timeoutConfirmDeployUnit = ''
     boolean isTimeoutConfirmDeployUnitValid = false
-    if (params.timeoutConfirmDeployUnit != null && ("SECONDS".equals(params.timeoutConfirmDeployUnit.toUpperCase())
+    if (params.timeoutConfirmDeployUnit != null && ("NANOSECONDS".equals(params.timeoutConfirmDeployUnit.toUpperCase())
+    || "MICROSECONDS".equals(params.timeoutConfirmDeployUnit.toUpperCase())
+    || "MILLISECONDS".equals(params.timeoutConfirmDeployUnit.toUpperCase())
+    || "SECONDS".equals(params.timeoutConfirmDeployUnit.toUpperCase())
     || "MINUTES".equals(params.timeoutConfirmDeployUnit.toUpperCase())
     || "HOURS".equals(params.timeoutConfirmDeployUnit.toUpperCase())
     || "DAYS".equals(params.timeoutConfirmDeployUnit.toUpperCase()))) {
