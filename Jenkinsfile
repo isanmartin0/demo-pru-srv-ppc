@@ -485,6 +485,8 @@ def runPPCJenkinsfile() {
                             }
                         }
                     } catch (exc) {
+                        def exc_message = exc.message
+                        echo "${exc_message}"
                         currentBuild.result = 'UNSTABLE'
                     }
                 }
