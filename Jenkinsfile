@@ -422,7 +422,7 @@ def runPPCJenkinsfile() {
         stage('Decide on Deploying') {
             if (timeoutConfirmDeploy && timeoutConfirmDeployTime > 0 && isTimeoutConfirmDeployUnitValid) {
                 //Wrap input with timeout
-                timeout(time:${timeoutConfirmDeployTime}, unit:'${timeoutConfirmDeployUnit}') {
+                timeout(time:timeoutConfirmDeployTime, unit:'${timeoutConfirmDeployUnit}') {
                     deploy = input message: 'Waiting for user approval',
                         parameters: [choice(name: 'Continue and deploy?', choices: 'No\nYes', description: 'Choose "Yes" if you want to deploy this build')]
                 }
