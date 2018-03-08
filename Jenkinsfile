@@ -478,6 +478,8 @@ def runPPCJenkinsfile() {
                 node('taurus') { //taurus
                     try {
                         stage('Acceptance Tests') {
+
+                            echo "taurus_test_base_path: ${taurus_test_base_path}"
                             executePerformanceTest {
                                 pts_taurus_test_base_path = taurus_test_base_path
                                 pts_acceptance_test_path = acceptance_test_path
