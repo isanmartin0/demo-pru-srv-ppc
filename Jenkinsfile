@@ -389,8 +389,10 @@ def runPPCJenkinsfile() {
 
     if (branchType in params.confirmDeploy) {
         stage('Decide on Deploying') {
-            deploy = input message: 'Waiting for user approval',
+            timeout(time:30, unit:'SECONDS') {
+                deploy = input message: 'Waiting for user approval',
                     parameters: [choice(name: 'Continue and deploy?', choices: 'No\nYes', description: 'Choose "Yes" if you want to deploy this build')]
+            }
         }
     }
 
@@ -469,7 +471,13 @@ def runPPCJenkinsfile() {
                     } catch (exc) {
                         def exc_message = exc.message
                         echo "${exc_message}"
-                        currentBuild.result = 'UNSTABLE'
+                        if (errorOnPerformanceTestsUnstableResult) {
+                            currentBuild.result = 'UNSTABLE'
+                        } else {
+                            //Failed status
+                            currentBuild.result = 'FAILURE'
+                            throw new hudson.AbortException("The ${Constants.ACCEPTANCE_TEST_TYPE} tests stage has failures")
+                        }
                     }
                 }
             }
@@ -492,7 +500,13 @@ def runPPCJenkinsfile() {
                     } catch (exc) {
                         def exc_message = exc.message
                         echo "${exc_message}"
-                        currentBuild.result = 'UNSTABLE'
+                        if (errorOnPerformanceTestsUnstableResult) {
+                            currentBuild.result = 'UNSTABLE'
+                        } else {
+                            //Failed status
+                            currentBuild.result = 'FAILURE'
+                            throw new hudson.AbortException("The ${Constants.SECURITY_TEST_TYPE} tests stage has failures")
+                        }
                     }
                 }
             }
@@ -519,7 +533,13 @@ def runPPCJenkinsfile() {
                 } catch (exc) {
                     def exc_message = exc.message
                     echo "${exc_message}"
-                    currentBuild.result = 'UNSTABLE'
+                    if (errorOnPerformanceTestsUnstableResult) {
+                        currentBuild.result = 'UNSTABLE'
+                    } else {
+                        //Failed status
+                        currentBuild.result = 'FAILURE'
+                        throw new hudson.AbortException("The ${Constants.PERFORMANCE_TEST_TYPE} tests stage has failures")
+                    }
                 }
             }
         } else {
