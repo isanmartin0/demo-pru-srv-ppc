@@ -404,11 +404,13 @@ def runPPCJenkinsfile() {
         timeoutConfirmDeployTime = timeoutConfirmDeployTimeParam as Integer
     }
 
-    String timeoutConfirmDeployUnit = 'MINUTES'
+    String timeoutConfirmDeployUnit = ''
+    boolean isTimeoutConfirmDeployUnitValid = false
     if (params.timeoutConfirmDeployUnit != null && ("SECONDS".equals(params.timeoutConfirmDeployUnit.toUpperCase())
     || "MINUTES".equals(params.timeoutConfirmDeployUnit.toUpperCase())
     || "HOURS".equals(params.timeoutConfirmDeployUnit.toUpperCase())
     || "DAYS".equals(params.timeoutConfirmDeployUnit.toUpperCase()))) {
+        isTimeoutConfirmDeployUnitValid = true
         timeoutConfirmDeployUnit = params.timeoutConfirmDeployUnit.toUpperCase()
     }
 
@@ -418,9 +420,17 @@ def runPPCJenkinsfile() {
 
     if (branchType in params.confirmDeploy) {
         stage('Decide on Deploying') {
-            timeout(time:30, unit:'SECONDS') {
+            if (timeoutConfirmDeploy && timeoutConfirmDeployTime > 0 && isTimeoutConfirmDeployUnitValid) {
+                //Wrap input with timeout
+                timeout(time:${timeoutConfirmDeployTime}, unit:'${timeoutConfirmDeployUnit}') {
+                    deploy = input message: 'Waiting for user approval',
+                        parameters: [choice(name: 'Continue and deploy?', choices: 'No\nYes', description: 'Choose "Yes" if you want to deploy this build')]
+                }
+            } else {
+                //Input without timeout
                 deploy = input message: 'Waiting for user approval',
                     parameters: [choice(name: 'Continue and deploy?', choices: 'No\nYes', description: 'Choose "Yes" if you want to deploy this build')]
+
             }
         }
     }
