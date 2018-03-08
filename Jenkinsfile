@@ -595,6 +595,11 @@ def runPPCJenkinsfile() {
         } else {
             echo "Skipping ${Constants.PERFORMANCE_TEST_TYPE} tests..."
         }
+    } else {
+        //User doesn't want to deploy
+        //Failed status
+        currentBuild.result = 'FAILURE'
+        throw new hudson.AbortException("The deploy on Openshift hasn't been confirmed")
     }
 
 
