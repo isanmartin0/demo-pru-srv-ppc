@@ -419,62 +419,30 @@ def runPPCJenkinsfile() {
 
 
         if (branchType in params.testing.postdeploy.smokeTesting) {
-            tasks["smoke"] = {
+            tasks["${Constants.SMOKE_TEST_TYPE}"] = {
                 node('taurus') { //taurus
                     try {
-                        stage('Smoke Tests') {
-                            def isSmokeErrorTestStage = false
-                            checkout scm
-                            echo "Running smoke tests..."
-
-                            def test_files_location = taurus_test_base_path + smoke_test_path + '**/*.yml'
-                            echo "Searching smoke tests with pattern: ${test_files_location}"
-
-                            def files = findFiles(glob: test_files_location)
-
-                            def testFilesNumber = files.length
-                            echo "Smoke test files found number: ${testFilesNumber}"
-
-                            files.eachWithIndex { file, index ->
-
-                                def isDirectory = files[index].directory
-
-                                if (!isDirectory) {
-                                    echo "Executing smoke test file number #${index}: ${files[index].path}"
-
-                                    echo "Setting taurus scenarios.scenario-default.default-address to ${openshift_route_hostname_with_protocol}"
-                                    echo "Setting taurus modules.gatling.java-opts to ${openshift_route_hostname_with_protocol}"
-
-                                    def bztScript = 'bzt -o scenarios.scenario-default.default-address=' + openshift_route_hostname_with_protocol + ' -o modules.gatling.java-opts=-Ddefault-address=' + openshift_route_hostname_with_protocol + ' ' + files[index].path  + ' -report --option=modules.console.disable=true'
-
-                                    try {
-                                        echo "Executing script ${bztScript}"
-                                        sh "${bztScript}"
-                                    } catch (exc) {
-                                        isSmokeErrorTestStage = true
-                                        echo 'There is an error executing smoke test'
-                                        def exc_message = exc.message
-                                        echo "${exc_message}"
-                                    }
-                                }
-                            }
-
-                            if (isSmokeErrorTestStage) {
-                                echo 'Smoke tests have caused an unstable result to build'
-                                sh "exit 1"
+                        stage("${Constants.SMOKE_TEST_TYPE} Tests") {
+                            executePerformanceTest {
+                                pts_taurus_test_base_path = taurus_test_base_path
+                                pts_acceptance_test_path = smoke_test_path
+                                pts_openshift_route_hostname_with_protocol = openshift_route_hostname_with_protocol
+                                pts_performance_test_type = Constants.SMOKE_TEST_TYPE
                             }
                         }
                     } catch (exc) {
+                        def exc_message = exc.message
+                        echo "${exc_message}"
                         currentBuild.result = 'UNSTABLE'
                     }
                 }
             }
         } else {
-            echo "Skipping smoke tests..."
+            echo "Skipping ${Constants.ACCEPTANCE_TEST_TYPE} tests..."
         }
 
         if (branchType in params.testing.postdeploy.acceptanceTesting) {
-            tasks["acceptance"] = {
+            tasks["${Constants.ACCEPTANCE_TEST_TYPE}"] = {
                 node('taurus') { //taurus
                     try {
                         stage("${Constants.ACCEPTANCE_TEST_TYPE} Tests") {
@@ -493,62 +461,30 @@ def runPPCJenkinsfile() {
                 }
             }
         } else {
-            echo "Skipping acceptance tests..."
+            echo "Skipping ${Constants.ACCEPTANCE_TEST_TYPE} tests..."
         }
 
         if (branchType in params.testing.postdeploy.securityTesting) {
-            tasks["security"] = {
+            tasks["${Constants.SECURITY_TEST_TYPE}"] = {
                 node('taurus') { //taurus
                     try {
-                        stage('Security Tests') {
-                            def isSecurityErrorTestStage = false
-                            checkout scm
-                            echo "Running security tests..."
-
-                            def test_files_location = taurus_test_base_path + security_test_path + '**/*.yml'
-                            echo "Searching security tests with pattern: ${test_files_location}"
-
-                            def files = findFiles(glob: test_files_location)
-
-                            def testFilesNumber = files.length
-                            echo "Security test files found number: ${testFilesNumber}"
-
-                            files.eachWithIndex { file, index ->
-
-                                def isDirectory = files[index].directory
-
-                                if (!isDirectory) {
-                                    echo "Executing security test file number #${index}: ${files[index].path}"
-
-                                    echo "Setting taurus scenarios.scenario-default.default-address to ${openshift_route_hostname_with_protocol}"
-                                    echo "Setting taurus modules.gatling.java-opts to ${openshift_route_hostname_with_protocol}"
-
-                                    def bztScript = 'bzt -o scenarios.scenario-default.default-address=' + openshift_route_hostname_with_protocol + ' -o modules.gatling.java-opts=-Ddefault-address=' + openshift_route_hostname_with_protocol + ' ' + files[index].path  + ' -report --option=modules.console.disable=true'
-
-                                    try {
-                                        echo "Executing script ${bztScript}"
-                                        sh "${bztScript}"
-                                    } catch (exc) {
-                                         isSecurityErrorTestStage = true
-                                          echo 'There is an error executing security test'
-                                          def exc_message = exc.message
-                                          echo "${exc_message}"
-                                    }
-                                }
-                            }
-
-                            if (isSecurityErrorTestStage) {
-                                echo 'Security tests have caused an unstable result to build'
-                                sh "exit 1"
+                        stage("${Constants.SECURITY_TEST_TYPE} Tests") {
+                            executePerformanceTest {
+                                pts_taurus_test_base_path = taurus_test_base_path
+                                pts_acceptance_test_path = security_test_path
+                                pts_openshift_route_hostname_with_protocol = openshift_route_hostname_with_protocol
+                                pts_performance_test_type = Constants.SECURITY_TEST_TYPE
                             }
                         }
                     } catch (exc) {
+                        def exc_message = exc.message
+                        echo "${exc_message}"
                         currentBuild.result = 'UNSTABLE'
                     }
                 }
             }
         } else {
-            echo "Skipping security tests..."
+            echo "Skipping ${Constants.SECURITY_TEST_TYPE} tests..."
         }
 
 
@@ -558,56 +494,23 @@ def runPPCJenkinsfile() {
 
         if (branchType in params.testing.postdeploy.performanceTesting) {
             node('taurus') { //taurus
-                def isPerformanceErrorTestStage = false
-                checkout scm
-
                 try {
-                    stage('Performance Tests') {
-                        echo "Running performance tests..."
-
-                        def test_files_location = taurus_test_base_path + performance_test_path + '**/*.yml'
-                        echo "Searching performance tests with pattern: ${test_files_location}"
-
-                        def files = findFiles(glob: test_files_location)
-
-                        def testFilesNumber = files.length
-                        echo "Performance test files found number: ${testFilesNumber}"
-
-                        files.eachWithIndex { file, index ->
-
-                            def isDirectory = files[index].directory
-
-                            if (!isDirectory) {
-                                echo "Executing performance test file number #${index}: ${files[index].path}"
-
-                                echo "Setting taurus scenarios.scenario-default.default-address to ${openshift_route_hostname_with_protocol}"
-                                echo "Setting taurus modules.gatling.java-opts to ${openshift_route_hostname_with_protocol}"
-
-                                def bztScript = 'bzt -o scenarios.scenario-default.default-address=' + openshift_route_hostname_with_protocol + ' -o modules.gatling.java-opts=-Ddefault-address=' + openshift_route_hostname_with_protocol + ' ' + files[index].path  + ' -report --option=modules.console.disable=true'
-
-                                try {
-                                    echo "Executing script ${bztScript}"
-                                    sh "${bztScript}"
-                                } catch (exc) {
-                                    isPerformanceErrorTestStage = true
-                                    echo 'There is an error executing performance test'
-                                    def exc_message = exc.message
-                                    echo "${exc_message}"
-                                }
-                            }
-                        }
-
-                        if (isPerformanceErrorTestStage) {
-                            echo 'Performance tests have caused an unstable result to build'
-                            sh "exit 1"
+                    stage("${Constants.PERFORMANCE_TEST_TYPE} Tests") {
+                        executePerformanceTest {
+                            pts_taurus_test_base_path = taurus_test_base_path
+                            pts_acceptance_test_path = performance_test_path
+                            pts_openshift_route_hostname_with_protocol = openshift_route_hostname_with_protocol
+                            pts_performance_test_type = Constants.PERFORMANCE_TEST_TYPE
                         }
                     }
                 } catch (exc) {
+                    def exc_message = exc.message
+                    echo "${exc_message}"
                     currentBuild.result = 'UNSTABLE'
                 }
             }
         } else {
-            echo "Skipping performance tests..."
+            echo "Skipping ${Constants.PERFORMANCE_TEST_TYPE} tests..."
         }
     }
 
