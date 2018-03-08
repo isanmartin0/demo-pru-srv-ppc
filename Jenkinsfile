@@ -475,11 +475,12 @@ def runPPCJenkinsfile() {
 
         if (branchType in params.testing.postdeploy.acceptanceTesting) {
             tasks["acceptance"] = {
-
-                executePerformanceTest {
-                    pts_taurus_test_base_path = taurus_test_base_path
-                    pts_acceptance_test_path = acceptance_test_path
-                    pts_openshift_route_hostname_with_protocol = openshift_route_hostname_with_protocol
+                node('taurus') { //taurus
+                    executePerformanceTest {
+                        pts_taurus_test_base_path = taurus_test_base_path
+                        pts_acceptance_test_path = acceptance_test_path
+                        pts_openshift_route_hostname_with_protocol = openshift_route_hostname_with_protocol
+                    }
                 }
             }
         } else {
