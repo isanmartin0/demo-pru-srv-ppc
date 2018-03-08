@@ -415,15 +415,10 @@ def runPPCJenkinsfile() {
         echo "Openshift route hostname (with protocol): ${openshift_route_hostname_with_protocol}"
 
         echo "params.jenkins.errorOnPerformanceTestsUnstableResult: ${params.jenkins.errorOnPerformanceTestsUnstableResult}"
-        boolean errorOnPerformanceTestsUnstableResult = false
+        Boolean errorOnPerformanceTestsUnstableResult = false
 
-        try {
-            if (params.jenkins.errorOnPerformanceTestsUnstableResult != null) {
-                errorOnPerformanceTestsUnstableResult = params.jenkins.errorOnPerformanceTestsUnstableResult
-            }
-        } catch (exc) {
-            def exc_message = exc.message
-            echo "${exc_message}"
+        if (params.jenkins.errorOnPerformanceTestsUnstableResult != null) {
+            errorOnPerformanceTestsUnstableResult = params.jenkins.errorOnPerformanceTestsUnstableResult.toBoolean()
         }
 
         echo "errorOnPerformanceTestsUnstableResult value: ${errorOnPerformanceTestsUnstableResult}"
@@ -456,7 +451,7 @@ def runPPCJenkinsfile() {
                 }
             }
         } else {
-            echo "Skipping ${Constants.ACCEPTANCE_TEST_TYPE} tests..."
+            echo "Skipping ${Constants.SMOKE_TEST_TYPE} tests..."
         }
 
         if (branchType in params.testing.postdeploy.acceptanceTesting) {
