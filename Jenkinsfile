@@ -412,11 +412,23 @@ def runPPCJenkinsfile() {
 
 
         echo "Openshift route hostname: ${openshift_route_hostname}"
-         echo "Openshift route hostname (with protocol): ${openshift_route_hostname_with_protocol}"
+        echo "Openshift route hostname (with protocol): ${openshift_route_hostname_with_protocol}"
+
+        echo "params.jenkins.errorOnPerformanceTestsUnstableResult: ${params.jenkins.errorOnPerformanceTestsUnstableResult}"
+        boolean errorOnPerformanceTestsUnstableResult = false
+
+        try {
+            if (params.jenkins.errorOnPerformanceTestsUnstableResult != null) {
+                errorOnPerformanceTestsUnstableResult = params.jenkins.errorOnPerformanceTestsUnstableResult
+            }
+        } catch (exc) {
+            def exc_message = exc.message
+            echo "${exc_message}"
+        }
+
+        echo "errorOnPerformanceTestsUnstableResult value: ${errorOnPerformanceTestsUnstableResult}"
 
         def tasks = [:]
-
-
 
         if (branchType in params.testing.postdeploy.smokeTesting) {
             tasks["${Constants.SMOKE_TEST_TYPE}"] = {
@@ -433,7 +445,13 @@ def runPPCJenkinsfile() {
                     } catch (exc) {
                         def exc_message = exc.message
                         echo "${exc_message}"
-                        currentBuild.result = 'UNSTABLE'
+                        if (errorOnPerformanceTestsUnstableResult) {
+                            currentBuild.result = 'UNSTABLE'
+                        } else {
+                            //Failed status
+                            currentBuild.result = 'FAILURE'
+                            throw new hudson.AbortException("The ${Constants.SMOKE_TEST_TYPE} tests stage has failures")
+                        }
                     }
                 }
             }
