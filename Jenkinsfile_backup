@@ -475,11 +475,53 @@ def runPPCJenkinsfile() {
 
         if (branchType in params.testing.postdeploy.acceptanceTesting) {
             tasks["acceptance"] = {
+                node('taurus') { //taurus
+                    try {
+                        stage('Acceptance Tests') {
+                            def isAcceptanceErrorTestStage = false
+                            checkout scm
+                            echo "Running acceptance tests..."
 
-                executePerformanceTest {
-                    pts_taurus_test_base_path = taurus_test_base_path
-                    pts_acceptance_test_path = acceptance_test_path
-                    pts_openshift_route_hostname_with_protocol = openshift_route_hostname_with_protocol
+                            def test_files_location = taurus_test_base_path + acceptance_test_path + '**/*.yml'
+                            echo "Searching acceptance tests with pattern: ${test_files_location}"
+
+                            def files = findFiles(glob: test_files_location)
+
+                            def testFilesNumber = files.length
+                            echo "Acceptance test files found number: ${testFilesNumber}"
+
+                            files.eachWithIndex { file, index ->
+
+                                def isDirectory = files[index].directory
+
+                                if (!isDirectory) {
+                                    echo "Executing acceptance test file number #${index}: ${files[index].path}"
+
+                                    echo "Setting taurus scenarios.scenario-default.default-address to ${openshift_route_hostname_with_protocol}"
+                                    echo "Setting taurus modules.gatling.java-opts to ${openshift_route_hostname_with_protocol}"
+
+                                    def bztScript = 'bzt -o scenarios.scenario-default.default-address=' + openshift_route_hostname_with_protocol + ' -o modules.gatling.java-opts=-Ddefault-address=' + openshift_route_hostname_with_protocol + ' ' + files[index].path  + ' -report --option=modules.console.disable=true'
+
+                                    try {
+                                        echo "Executing script ${bztScript}"
+                                        sh "${bztScript}"
+                                    } catch (exc) {
+                                          isAcceptanceErrorTestStage = true
+                                          echo 'There is an error executing acceptance test'
+                                          def exc_message = exc.message
+                                          echo "${exc_message}"
+                                    }
+                                }
+                            }
+
+                            if (isAcceptanceErrorTestStage) {
+                                echo 'Acceptance tests have caused an unstable result to build'
+                                sh "exit 1"
+                            }
+                        }
+                    } catch (exc) {
+                        currentBuild.result = 'UNSTABLE'
+                    }
                 }
             }
         } else {
