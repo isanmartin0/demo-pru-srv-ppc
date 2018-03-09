@@ -487,6 +487,7 @@ def runPPCJenkinsfile() {
 
         def tasks = [:]
 
+        //Smoke tests
         if (branchType in params.testing.postdeploy.smokeTesting) {
             tasks["${Constants.SMOKE_TEST_TYPE}"] = {
                 node('taurus') { //taurus
@@ -516,6 +517,7 @@ def runPPCJenkinsfile() {
             echo "Skipping ${Constants.SMOKE_TEST_TYPE} tests..."
         }
 
+        //Acceptance tests
         if (branchType in params.testing.postdeploy.acceptanceTesting) {
             tasks["${Constants.ACCEPTANCE_TEST_TYPE}"] = {
                 node('taurus') { //taurus
@@ -545,6 +547,7 @@ def runPPCJenkinsfile() {
             echo "Skipping ${Constants.ACCEPTANCE_TEST_TYPE} tests..."
         }
 
+        //Security tests
         if (branchType in params.testing.postdeploy.securityTesting) {
             tasks["${Constants.SECURITY_TEST_TYPE}"] = {
                 node('taurus') { //taurus
@@ -579,6 +582,7 @@ def runPPCJenkinsfile() {
         parallel tasks
 
 
+        //Performance tests
         if (branchType in params.testing.postdeploy.performanceTesting) {
             node('taurus') { //taurus
                 try {
@@ -605,6 +609,8 @@ def runPPCJenkinsfile() {
         } else {
             echo "Skipping ${Constants.PERFORMANCE_TEST_TYPE} tests..."
         }
+
+
     } else {
         //User doesn't want to deploy
         //Failed status
