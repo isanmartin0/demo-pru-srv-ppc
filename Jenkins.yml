@@ -41,6 +41,7 @@ testing:
 
   postdeploy:
     smokeTesting:
+      - develop
       - release
       - master
     securityTesting:
