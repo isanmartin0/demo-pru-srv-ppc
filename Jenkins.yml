@@ -19,7 +19,7 @@ confirmDeploy:
   - develop
   - master
 timeoutConfirmDeploy: true
-timeoutConfirmDeployTime: 3
+timeoutConfirmDeployTime: 10
 timeoutConfirmDeployUnit: SECONDS
 
 testing:

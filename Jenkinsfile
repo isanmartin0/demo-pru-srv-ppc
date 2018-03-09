@@ -387,43 +387,53 @@ def runPPCJenkinsfile() {
 
     def deploy = 'Yes'
 
-    //Parameters timeout deploy answer
-
-    int timeoutConfirmDeployTime = 0
-    echo "params.timeoutConfirmDeploy: ${params.timeoutConfirmDeploy}"
-    Boolean timeoutConfirmDeploy = false
-    if (params.timeoutConfirmDeploy != null) {
-        timeoutConfirmDeploy = params.timeoutConfirmDeploy.toBoolean()
-    }
-
-    echo "params.timeoutConfirmDeployTime: ${params.timeoutConfirmDeployTime}"
-    echo "params.timeoutConfirmDeployUnit: ${params.timeoutConfirmDeployUnit}"
-
-    String timeoutConfirmDeployTimeParam = params.timeoutConfirmDeployTime
-    if (timeoutConfirmDeployTimeParam != null && timeoutConfirmDeployTimeParam.isInteger()) {
-        timeoutConfirmDeployTime = timeoutConfirmDeployTimeParam as Integer
-    }
-
-    String timeoutConfirmDeployUnit = ''
-    boolean isTimeoutConfirmDeployUnitValid = false
-    if (params.timeoutConfirmDeployUnit != null && ("NANOSECONDS".equals(params.timeoutConfirmDeployUnit.toUpperCase())
-    || "MICROSECONDS".equals(params.timeoutConfirmDeployUnit.toUpperCase())
-    || "MILLISECONDS".equals(params.timeoutConfirmDeployUnit.toUpperCase())
-    || "SECONDS".equals(params.timeoutConfirmDeployUnit.toUpperCase())
-    || "MINUTES".equals(params.timeoutConfirmDeployUnit.toUpperCase())
-    || "HOURS".equals(params.timeoutConfirmDeployUnit.toUpperCase())
-    || "DAYS".equals(params.timeoutConfirmDeployUnit.toUpperCase()))) {
-        isTimeoutConfirmDeployUnitValid = true
-        timeoutConfirmDeployUnit = params.timeoutConfirmDeployUnit.toUpperCase()
-    }
-
-    echo "timeoutConfirmDeploy value: ${timeoutConfirmDeploy}"
-    echo "timeoutConfirmDeployTime value: ${timeoutConfirmDeployTime}"
-    echo "timeoutConfirmDeployUnit value: ${timeoutConfirmDeployUnit}"
 
     if (branchType in params.confirmDeploy) {
         try {
             stage('Decide on Deploying') {
+
+                //Parameters timeout deploy answer
+
+                Boolean timeoutConfirmDeploy = false
+                int timeoutConfirmDeployTime = 0
+                String timeoutConfirmDeployUnit = ''
+                boolean isTimeoutConfirmDeployUnitValid = false
+
+                echo "params.timeoutConfirmDeploy: ${params.timeoutConfirmDeploy}"
+
+                if (params.timeoutConfirmDeploy != null) {
+                    timeoutConfirmDeploy = params.timeoutConfirmDeploy.toBoolean()
+                }
+
+                if (timeoutConfirmDeploy) {
+                    echo "params.timeoutConfirmDeployTime: ${params.timeoutConfirmDeployTime}"
+                    echo "params.timeoutConfirmDeployUnit: ${params.timeoutConfirmDeployUnit}"
+
+                    String timeoutConfirmDeployTimeParam = params.timeoutConfirmDeployTime
+                    if (timeoutConfirmDeployTimeParam != null && timeoutConfirmDeployTimeParam.isInteger()) {
+                        timeoutConfirmDeployTime = timeoutConfirmDeployTimeParam as Integer
+                    }
+
+                    if (params.timeoutConfirmDeployUnit != null && ("NANOSECONDS".equals(params.timeoutConfirmDeployUnit.toUpperCase())
+                    || "MICROSECONDS".equals(params.timeoutConfirmDeployUnit.toUpperCase())
+                    || "MILLISECONDS".equals(params.timeoutConfirmDeployUnit.toUpperCase())
+                    || "SECONDS".equals(params.timeoutConfirmDeployUnit.toUpperCase())
+                    || "MINUTES".equals(params.timeoutConfirmDeployUnit.toUpperCase())
+                    || "HOURS".equals(params.timeoutConfirmDeployUnit.toUpperCase())
+                    || "DAYS".equals(params.timeoutConfirmDeployUnit.toUpperCase()))) {
+                        isTimeoutConfirmDeployUnitValid = true
+                        timeoutConfirmDeployUnit = params.timeoutConfirmDeployUnit.toUpperCase()
+                    }
+                }
+
+                echo "timeoutConfirmDeploy value: ${timeoutConfirmDeploy}"
+
+                if (timeoutConfirmDeploy) {
+                    echo "timeoutConfirmDeployTime value: ${timeoutConfirmDeployTime}"
+                    echo "timeoutConfirmDeployUnit value: ${timeoutConfirmDeployUnit}"
+                }
+
+
                 if (timeoutConfirmDeploy && timeoutConfirmDeployTime > 0 && isTimeoutConfirmDeployUnitValid) {
                     //Wrap input with timeout
                     timeout(time:timeoutConfirmDeployTime, unit:"${timeoutConfirmDeployUnit}") {
