@@ -16,6 +16,7 @@ spring:
   profileHotfix: uat
 
 confirmDeploy:
+  - develop
   - master
 timeoutConfirmDeploy: false
 timeoutConfirmDeployTime: 1
