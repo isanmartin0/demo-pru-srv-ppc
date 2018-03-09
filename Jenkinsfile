@@ -439,7 +439,7 @@ def runPPCJenkinsfile() {
             }
         } catch (err) {
             def user = err.getCauses()[0].getUser()
-            if('SYSTEM' == user.toString()) { //timeout
+            if('SYSTEM'.equals(user.toString())) { //timeout
                 currentBuild.result = "FAILED"
                 throw new hudson.AbortException("Timeout on confirm deploy")
             }
