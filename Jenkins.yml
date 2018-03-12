@@ -14,8 +14,8 @@ spring:
   profileRelease: uat
   profileMaster: prod
   profileHotfix: uat
-  useConfigurationProfilesFiles: false
-  configMapsVolumePersistPath: /usr/local/tomcat/conf
+  useConfigurationProfilesFiles: true
+  configMapsVolumePersistPath: /usr/local/tomcat_new/conf
 
 confirmDeploy:
   - master
