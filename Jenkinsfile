@@ -34,12 +34,14 @@ def runPPCJenkinsfile() {
     def isPPCApplicationDevProperties = false
     def isPPCApplicationUatProperties = false
     def isPPCApplicationProdProperties = false
+    def isPPCApplicationProperties = false
     def jenkinsFilePathPPC = relativeTargetDirPPC + 'Jenkinsfile'
     def jenkinsYamlPathPPC = relativeTargetDirPPC + 'Jenkins.yml'
     def openshiftTemplatePathPPC = relativeTargetDirPPC + 'kube/template.yaml'
     def applicationDevPropertiesPathPPC = relativeTargetDirPPC + 'configuration_profiles/dev/application-dev.properties'
     def applicationUatPropertiesPathPPC = relativeTargetDirPPC + 'configuration_profiles/uat/application-uat.properties'
     def applicationProdPropertiesPathPPC = relativeTargetDirPPC + 'configuration_profiles/prod/application-prod.properties'
+    def applicationPropertiesPathPPC = relativeTargetDirPPC + 'configuration_profiles/application.properties'
     def jenknsFilePipelinePPC
 
 
@@ -123,6 +125,16 @@ def runPPCJenkinsfile() {
                     echo "Parallel configuration project Openshift template not found"
                 }
 
+                //application.properties
+                isPPCApplicationProperties = fileExists applicationPropertiesPathPPC
+
+                if (isPPCApplicationProperties) {
+                    echo "Parallel configuration project profile application.properties found"
+                } else {
+                    echo "Parallel configuration project profile application.properties not found"
+                }
+
+
                 //application-dev.properties
                 isPPCApplicationDevProperties = fileExists applicationDevPropertiesPathPPC
 
@@ -155,6 +167,7 @@ def runPPCJenkinsfile() {
                 echo "isPPCJenkinsFile : ${isPPCJenkinsFile}"
                 echo "isPPCJenkinsYaml : ${isPPCJenkinsYaml}"
                 echo "isPPCOpenshiftTemplate : ${isPPCOpenshiftTemplate}"
+                echo "isPPCApplicationProperties : ${isPPCApplicationProperties}"
                 echo "isPPCApplicationDevProperties : ${isPPCApplicationDevProperties}"
                 echo "isPPCApplicationUatProperties : ${isPPCApplicationUatProperties}"
                 echo "isPPCApplicationProdProperties : ${isPPCApplicationProdProperties}"
@@ -345,6 +358,26 @@ def runPPCJenkinsfile() {
             }
 
         }
+
+        //Creation Config Maps
+        Boolean useConfigurationProfilesFiles = false
+        def configMapsVolumePersistPath = ''
+        echo "params.spring.useConfigurationProfilesFiles: ${params.spring.useConfigurationProfilesFiles}"
+        echo "params.spring.configMapsVolumePersistPath: ${params.spring.configMapsVolumePersistPath}"
+
+        if (params.spring.useConfigurationProfilesFiles) {
+            useConfigurationProfilesFiles = params.spring.useConfigurationProfilesFiles.toBoolean()
+        }
+
+        if (useConfigurationProfilesFiles) {
+            if (params.spring.configMapsVolumePersistPath) {
+                configMapsVolumePersistPath = params.spring.configMapsVolumePersistPath
+            }
+        }
+
+        echo "useConfigurationProfilesFiles value: ${useConfigurationProfilesFiles}"
+        echo "configMapsVolumePersistPath value: ${configMapsVolumePersistPath}"
+
 
         stage('OpenShift Build') {
             echo "Building image on OpenShift..."
