@@ -14,7 +14,7 @@ spring:
   profileRelease: uat
   profileMaster: prod
   profileHotfix: uat
-  useConfigurationProfilesFiles: true
+  useConfigurationProfilesFiles: false
   configMapsVolumePersistPath: /usr/local/tomcat/conf
 
 confirmDeploy:
@@ -42,19 +42,19 @@ testing:
 
   postdeploy:
     smokeTesting:
-      - develop
-      - release
-      - master
+      # - develop
+      # - release
+      # - master
     securityTesting:
-      - develop
-      - release
+      # - develop
+      # - release
     performanceTesting:
-      - develop
-      - release
-      - hotfix
+      # - develop
+      # - release
+      # - hotfix
     acceptanceTesting:
-      - develop
-      - release
+      # - develop
+      # - release
 
 notifications:
   branch:
