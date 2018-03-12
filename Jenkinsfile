@@ -42,6 +42,7 @@ def runPPCJenkinsfile() {
     def applicationUatPropertiesPathPPC = relativeTargetDirPPC + 'configuration_profiles/uat/application-uat.properties'
     def applicationProdPropertiesPathPPC = relativeTargetDirPPC + 'configuration_profiles/prod/application-prod.properties'
     def applicationPropertiesPathPPC = relativeTargetDirPPC + 'configuration_profiles/application.properties'
+    def configMapsVolumePersistDefaultPath = '/usr/local/tomcat/conf'
     def jenknsFilePipelinePPC
 
 
@@ -372,6 +373,8 @@ def runPPCJenkinsfile() {
         if (useConfigurationProfilesFiles) {
             if (params.spring.configMapsVolumePersistPath) {
                 configMapsVolumePersistPath = params.spring.configMapsVolumePersistPath
+            } else {
+                configMapsVolumePersistPath = configMapsVolumePersistDefaultPath
             }
         }
 
