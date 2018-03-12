@@ -31,17 +31,17 @@ def runPPCJenkinsfile() {
     def isPPCJenkinsFile = false
     def isPPCJenkinsYaml = false
     def isPPCOpenshiftTemplate = false
+    def isPPCApplicationProperties = false
     def isPPCApplicationDevProperties = false
     def isPPCApplicationUatProperties = false
     def isPPCApplicationProdProperties = false
-    def isPPCApplicationProperties = false
     def jenkinsFilePathPPC = relativeTargetDirPPC + 'Jenkinsfile'
     def jenkinsYamlPathPPC = relativeTargetDirPPC + 'Jenkins.yml'
     def openshiftTemplatePathPPC = relativeTargetDirPPC + 'kube/template.yaml'
+    def applicationPropertiesPathPPC = relativeTargetDirPPC + 'configuration_profiles/application.properties'
     def applicationDevPropertiesPathPPC = relativeTargetDirPPC + 'configuration_profiles/dev/application-dev.properties'
     def applicationUatPropertiesPathPPC = relativeTargetDirPPC + 'configuration_profiles/uat/application-uat.properties'
     def applicationProdPropertiesPathPPC = relativeTargetDirPPC + 'configuration_profiles/prod/application-prod.properties'
-    def applicationPropertiesPathPPC = relativeTargetDirPPC + 'configuration_profiles/application.properties'
     def configMapsVolumePersistDefaultPath = '/usr/local/tomcat/conf'
     def jenknsFilePipelinePPC
 
@@ -397,6 +397,26 @@ def runPPCJenkinsfile() {
                 dockerRegistry = registry
             }
 
+
+            if (useConfigurationProfilesFiles) {
+                def configMapCreated = openshiftConfigMapsCreation {
+                    springProfileActive = springProfile
+                    isPPCApplicationPropertiesOpenshift =  isPPCApplicationProperties
+                    isPPCApplicationDevPropertiesOpenshift = isPPCApplicationDevProperties
+                    isPPCApplicationUatPropertiesOpenshift = isPPCApplicationUatProperties
+                    isPPCApplicationProdPropertiesOpenshift = isPPCApplicationProdProperties
+                    applicationPropertiesPathPPCOpenshift = applicationPropertiesPathPPC
+                    applicationDevPropertiesPathPPCOpenshift = applicationDevPropertiesPathPPC
+                    applicationUatPropertiesPathPPCOpenshift = applicationUatPropertiesPathPPC
+                }
+
+                if (configMapCreated) {
+                    openshiftConfigMapsPersistence {
+                        applicationProdPropertiesPathPPCOpenshift = applicationProdPropertiesPathPPC
+                    }
+                }
+
+            }
 
             openshiftEnvironmentVariables {
                 springProfileActive = springProfile
