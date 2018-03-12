@@ -398,6 +398,7 @@ def runPPCJenkinsfile() {
             }
 
 
+            boolean configMapPersisted = false
             if (useConfigurationProfilesFiles) {
                 def configMapCreated = openshiftConfigMapsCreation {
                     springProfileActive = springProfile
@@ -413,7 +414,7 @@ def runPPCJenkinsfile() {
                 }
 
                 if (configMapCreated) {
-                    openshiftConfigMapsPersistence {
+                    configMapPersisted = openshiftConfigMapsPersistence {
                         configMapsVolumePersistPathOpenshift = configMapsVolumePersistPath
                         branchHY = branchNameHY
                     }
@@ -425,6 +426,8 @@ def runPPCJenkinsfile() {
                 springProfileActive = springProfile
                 branchHY = branchNameHY
                 branch_type = branchType
+                configMapPersistedOpenshift = configMapPersisted
+                configMapsVolumePersistPathOpenshift = configMapsVolumePersistPath
             }
 
             openshiftBuildProject {
