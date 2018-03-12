@@ -408,11 +408,12 @@ def runPPCJenkinsfile() {
                     applicationPropertiesPathPPCOpenshift = applicationPropertiesPathPPC
                     applicationDevPropertiesPathPPCOpenshift = applicationDevPropertiesPathPPC
                     applicationUatPropertiesPathPPCOpenshift = applicationUatPropertiesPathPPC
+                    applicationProdPropertiesPathPPCOpenshift = applicationProdPropertiesPathPPC
                 }
 
                 if (configMapCreated) {
                     openshiftConfigMapsPersistence {
-                        applicationProdPropertiesPathPPCOpenshift = applicationProdPropertiesPathPPC
+                        configMapsVolumePersistPathOpenshift = configMapsVolumePersistPath
                     }
                 }
 
