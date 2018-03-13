@@ -362,8 +362,10 @@ def runPPCJenkinsfile() {
 
         //Creation Config Maps
         Boolean useConfigurationProfilesFiles = false
+        Boolean persistConfigurationProfilesFiles = false
         def configMapsVolumePersistPath = ''
         echo "params.spring.useConfigurationProfilesFiles: ${params.spring.useConfigurationProfilesFiles}"
+        echo "params.spring.persistConfigurationProfilesFiles: ${params.spring.persistConfigurationProfilesFiles}"
         echo "params.spring.configMapsVolumePersistPath: ${params.spring.configMapsVolumePersistPath}"
 
         if (params.spring.useConfigurationProfilesFiles) {
@@ -371,14 +373,21 @@ def runPPCJenkinsfile() {
         }
 
         if (useConfigurationProfilesFiles) {
-            if (params.spring.configMapsVolumePersistPath) {
-                configMapsVolumePersistPath = params.spring.configMapsVolumePersistPath
-            } else {
-                configMapsVolumePersistPath = configMapsVolumePersistDefaultPath
+            if (params.spring.persistConfigurationProfilesFiles) {
+                persistConfigurationProfilesFiles = params.spring.persistConfigurationProfilesFiles.toBoolean()
+            }
+
+            if (persistConfigurationProfilesFiles) {
+                if (params.spring.configMapsVolumePersistPath) {
+                    configMapsVolumePersistPath = params.spring.configMapsVolumePersistPath
+                } else {
+                    configMapsVolumePersistPath = configMapsVolumePersistDefaultPath
+                }
             }
         }
 
         echo "useConfigurationProfilesFiles value: ${useConfigurationProfilesFiles}"
+        echo "persistConfigurationProfilesFiles value: ${persistConfigurationProfilesFiles}"
         echo "configMapsVolumePersistPath value: ${configMapsVolumePersistPath}"
 
 
@@ -399,6 +408,7 @@ def runPPCJenkinsfile() {
 
 
             boolean configMapPersisted = false
+
             if (useConfigurationProfilesFiles) {
                 def configMapCreated = openshiftConfigMapsCreation {
                     springProfileActive = springProfile
@@ -411,12 +421,14 @@ def runPPCJenkinsfile() {
                     applicationUatPropertiesPathPPCOpenshift = applicationUatPropertiesPathPPC
                     applicationProdPropertiesPathPPCOpenshift = applicationProdPropertiesPathPPC
                     branchHY = branchNameHY
+                    branch_type = branchType
                 }
 
-                if (configMapCreated) {
+                if (configMapCreated && persistConfigurationProfilesFiles) {
                     configMapPersisted = openshiftConfigMapsPersistence {
                         configMapsVolumePersistPathOpenshift = configMapsVolumePersistPath
                         branchHY = branchNameHY
+                        branch_type = branchType
                     }
                 }
 
