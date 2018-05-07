@@ -72,6 +72,24 @@ jenkins:
   errorOnPostDeployTestsUnstableResult: true
 
 appDynamics:
-  creationAppDynamicsConfigMap: false
-  appDynamicsTemplatePath: appdynamics/appdynamics_template.yaml
+  creationAppDynamicsConfigMap: true
+  appDynamicsTemplatePath: appdynamics/appDynamics_template.yaml
   appDynamicsConfigMapsVolumePersistPath: /opt/appdynamics/conf
+  controllerHostnameUAT: 10.85.150.11
+  controllerPortUAT: 8090
+  controllerSSLEnabledUAT: false
+  agentApplicationNamePrefixUAT: ev-
+  agentApplicationNameSufixUAT: -srv
+  agentTierNamePrefixUAT: ev-
+  agentTierNameSufixUAT: -srv
+  agentAccountNameUAT: customer1
+  agentAccountAccessKeyUAT: 5ab3c79b-ca62-45ba-8ebf-b530f0ec7f0d
+  controllerHostnamePRO: sg01wpmtf01.grupoevo.corp
+  controllerPortPRO: 2443
+  controllerSSLEnabledPRO: true
+  agentApplicationNamePrefixPRO: ev-
+  agentApplicationNameSufixPRO: -srv
+  agentTierNamePrefixPRO: ev-
+  agentTierNameSufixPRO: -srv
+  agentAccountNamePRO: customer1
+  agentAccountAccessKeyPRO: d39876ee-8bc8-4923-bb7e-b976e5116fa2
