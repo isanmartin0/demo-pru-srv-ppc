@@ -499,13 +499,6 @@ def runPPCJenkinsfile() {
 
                 if (branchType == 'release' || branchType == 'hotfix') {
 
-                    //Detect existence and show parameters of agent for UAT environment
-                    if (!params.appDynamics.controllerHostnameUAT || !params.appDynamics.controllerPortUAT || !params.appDynamics.controllerSSLEnabledUAT
-                        || !params.appDynamics.agentAccountNameUAT || !params.appDynamics.agentAccountAccessKeyUAT || !params.appDynamics.appDynamicsTemplatePath) {
-                            currentBuild.result = Constants.FAILURE_BUILD_RESULT
-                            throw new hudson.AbortException('There are mandatory AppDynamics parameters without value for UAT environment. The mandatory parameters are: controllerHostnameUAT, controllerPortUAT, controllerSSLEnabledUAT, agentAccountNameUAT, agentAccountAccessKeyUAT and appDynamicsTemplatePath')
-                    }
-
                     echo "params.appDynamics.controllerHostnameUAT: ${params.appDynamics.controllerHostnameUAT}"
                     echo "params.appDynamics.controllerPortUAT: ${params.appDynamics.controllerPortUAT}"
                     echo "params.appDynamics.controllerSSLEnabledUAT: ${params.appDynamics.controllerSSLEnabledUAT}"
@@ -515,6 +508,23 @@ def runPPCJenkinsfile() {
                     echo "params.appDynamics.agentTierNameSufixUAT: ${params.appDynamics.agentTierNameSufixUAT}"
                     echo "params.appDynamics.agentAccountNameUAT: ${params.appDynamics.agentAccountNameUAT}"
                     echo "params.appDynamics.agentAccountAccessKeyUAT: ${params.appDynamics.agentAccountAccessKeyUAT}"
+
+                    if (!params.appDynamics.controllerHostnameUAT) {
+                        echo "****** no params.appDynamics.controllerHostnameUAT"
+                    }
+
+                    if (params.appDynamics.controllerHostnameUAT) {
+                        echo "****** SI params.appDynamics.controllerHostnameUAT"
+                    }
+
+                    //Detect existence and show parameters of agent for UAT environment
+                    if (!params.appDynamics.controllerHostnameUAT || !params.appDynamics.controllerPortUAT || !params.appDynamics.controllerSSLEnabledUAT
+                        || !params.appDynamics.agentAccountNameUAT || !params.appDynamics.agentAccountAccessKeyUAT || !params.appDynamics.appDynamicsTemplatePath) {
+                            currentBuild.result = Constants.FAILURE_BUILD_RESULT
+                            throw new hudson.AbortException('There are mandatory AppDynamics parameters without value for UAT environment. The mandatory parameters are: controllerHostnameUAT, controllerPortUAT, controllerSSLEnabledUAT, agentAccountNameUAT, agentAccountAccessKeyUAT and appDynamicsTemplatePath')
+                    }
+
+
 
 
                     appDynamicsConfigMapCreated = openshiftAppDynamicsConfigMapsCreation {
