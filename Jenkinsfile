@@ -558,7 +558,7 @@ def runPPCJenkinsfile() {
 
                     //Detect existence and show parameters of agent for PRO environment
                     if (!params.appDynamics.controllerHostnamePRO || !params.appDynamics.controllerPortPRO ||
-                        || !params.appDynamics.agentAccountNamePRO || !params.appDynamics.agentAccountAccessKeyPRO || !params.appDynamics.appDynamicsTemplatePath) {
+                        !params.appDynamics.agentAccountNamePRO || !params.appDynamics.agentAccountAccessKeyPRO || !params.appDynamics.appDynamicsTemplatePath) {
                             currentBuild.result = Constants.FAILURE_BUILD_RESULT
                             throw new hudson.AbortException('There are mandatory AppDynamics parameters without value for PRO environment. The mandatory parameters are: controllerHostnamePRO, controllerPortPRO, agentAccountNamePRO, agentAccountAccessKeyPRO and appDynamicsTemplatePath')
                     }
