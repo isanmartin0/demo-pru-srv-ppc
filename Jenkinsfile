@@ -552,7 +552,7 @@ def runPPCJenkinsfile() {
 
                     Boolean controllerSSLEnabled = false
 
-                    if (params.appDynamics.controllerSSLEnabledUAT) {
+                    if (params.appDynamics.controllerSSLEnabledPRO) {
                         controllerSSLEnabled = params.appDynamics.controllerSSLEnabledPRO.toBoolean()
                     }
 
@@ -579,6 +579,16 @@ def runPPCJenkinsfile() {
                         branch_type = branchType
                     }
 
+                }
+
+
+                //Persistence of the Appdynamics config map created
+                if (appDynamicsConfigMapCreated) {
+                    appDynamicsConfigMapPersisted = openshiftAppDynamicsConfigMapsPersistence {
+                        appDynamicsConfigMapsVolumePersistPathOpenshift = appDynamicsConfigMapsVolumePersistPath
+                        branchHY = branchNameHY
+                        branch_type = branchType
+                    }
                 }
 
 
