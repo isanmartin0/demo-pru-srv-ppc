@@ -67,7 +67,7 @@ def runPPCJenkinsfile() {
     //AppDynamics parameters
     Boolean creationAppDynamicsConfigMap = false
     def isPPCAppDynamicsTemplate = false
-    def appDynamicsTemplatePathPPC = relativeTargetDirPPC + 'appdynamics/appDynamics_template.yaml'
+    def appDynamicsTemplatePathPPC = relativeTargetDirPPC + 'appDynamics/appDynamics_template.yaml'
     def appDynamicsConfigMapsVolumePersistDefaultPath = '/opt/appdynamics/conf'
 
 
