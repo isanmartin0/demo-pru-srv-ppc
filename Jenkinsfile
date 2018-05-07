@@ -605,7 +605,7 @@ def runPPCJenkinsfile() {
 
             }
 
-            openshiftEnvironmentVariables {
+            openshiftEnvironmentVariablesAppDynamics {
                 springProfileActive = springProfile
                 branchHY = branchNameHY
                 branch_type = branchType
