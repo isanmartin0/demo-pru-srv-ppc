@@ -225,7 +225,7 @@ def runPPCJenkinsfile() {
                 creationAppDynamicsConfigMap = params.appDynamics.creationAppDynamicsConfigMap.toBoolean()
             }
 
-            if (if (!isPPCJenkinsFile  && !isPPCAppDynamicsTemplate) {
+            if (creationAppDynamicsConfigMap  && !isPPCAppDynamicsTemplate) {
                 currentBuild.result = Constants.FAILURE_BUILD_RESULT
                 throw new hudson.AbortException('The parallel project configuration has not appdynamics template')
             }
