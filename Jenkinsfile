@@ -606,12 +606,14 @@ def runPPCJenkinsfile() {
 
             }
 
-            openshiftEnvironmentVariablesAppDynamics {
+            openshiftEnvironmentVariables {
                 springProfileActive = springProfile
                 branchHY = branchNameHY
                 branch_type = branchType
                 configMapPersistedOpenshift = configMapPersisted
                 configMapsVolumePersistPathOpenshift = configMapsVolumePersistPath
+                appDynamicsConfigMapPersistedOpenshift = appDynamicsConfigMapPersisted
+                appDynamicsJavaOpts = params.appDynamics.javaOpts
             }
 
             openshiftBuildProject {
