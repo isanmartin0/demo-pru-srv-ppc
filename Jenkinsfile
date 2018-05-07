@@ -65,6 +65,7 @@ def runPPCJenkinsfile() {
     def openshift_route_hostname_with_protocol = ''
 
     //AppDynamics parameters
+    Boolean creationAppDynamicsConfigMap = false
     def isPPCAppDynamicsTemplate = false
     def appDynamicsTemplatePathPPC = relativeTargetDirPPC + 'appdynamics/appdynamics_template.yaml'
     def appDynamicsConfigMapsVolumePersistDefaultPath = '/opt/appdynamics/conf'
@@ -216,6 +217,18 @@ def runPPCJenkinsfile() {
             assert params.openshift.templatePath?.trim()
 
             echo "params.openshift.templatePath: ${params.openshift.templatePath}"
+
+            //Detect creation of AppDynamics agent and existence of appdynamics template
+            echo "params.appDynamics.creationAppDynamicsConfigMap: ${params.appDynamics.creationAppDynamicsConfigMap}"
+
+            if (params.appDynamics.creationAppDynamicsConfigMap) {
+                creationAppDynamicsConfigMap = params.appDynamics.creationAppDynamicsConfigMap.toBoolean()
+            }
+
+            if (if (!isPPCJenkinsFile  && !isPPCAppDynamicsTemplate) {
+                currentBuild.result = Constants.FAILURE_BUILD_RESULT
+                throw new hudson.AbortException('The parallel project configuration has not appdynamics template')
+            }
 
 
          }
@@ -408,31 +421,18 @@ def runPPCJenkinsfile() {
 
 
         //Creation AppDynamics config map
-        Boolean creationAppDynamicsConfigMap = false
-        def appDynamicsConfigMapsVolumePersistPath = ''
-        echo "params.appDynamics.creationAppDynamicsConfigMap: ${params.appDynamics.creationAppDynamicsConfigMap}"
-        echo "params.appDynamics.appDynamicsConfigMapsVolumePersistPath: ${params.appDynamics.appDynamicsConfigMapsVolumePersistPath}"
 
-        if (params.appDynamics.creationAppDynamicsConfigMap) {
-            creationAppDynamicsConfigMap = params.appDynamics.creationAppDynamicsConfigMap.toBoolean()
-        }
 
         if (creationAppDynamicsConfigMap) {
+
+            def appDynamicsConfigMapsVolumePersistPath = ''
+            echo "params.appDynamics.appDynamicsConfigMapsVolumePersistPath: ${params.appDynamics.appDynamicsConfigMapsVolumePersistPath}"
 
             //The appdynamics template is provided by parallel project configuration (PPC)
             params.appDynamics.appDynamicsTemplatePath = relativeTargetDirPPC + params.appDynamics.appDynamicsTemplatePath
             echo "Appdynamics template provided by parallel project configuration (PPC)"
 
             assert params.appDynamics.appDynamicsTemplatePath?.trim()
-
-            echo "params.appDynamics.appDynamicsTemplatePath: ${params.appDynamics.appDynamicsTemplatePath}"
-
-            //Check appdynamics template existence
-            if (!params.appDynamics.appDynamicsTemplatePath) {
-                currentBuild.result = Constants.FAILURE_BUILD_RESULT
-                throw new hudson.AbortException('The parallel project configuration has not appdynamics template and the configuration needs it')
-            }
-
 
             if (params.appDynamics.appDynamicsConfigMapsVolumePersistPath) {
                 appDynamicsConfigMapsVolumePersistPath = params.appDynamics.appDynamicsConfigMapsVolumePersistPath
@@ -442,6 +442,7 @@ def runPPCJenkinsfile() {
         }
 
         echo "creationAppDynamicsConfigMap value: ${creationAppDynamicsConfigMap}"
+        echo "params.appDynamics.appDynamicsTemplatePath: ${params.appDynamics.appDynamicsTemplatePath}"
         echo "appDynamicsConfigMapsVolumePersistPath value: ${appDynamicsConfigMapsVolumePersistPath}"
 
 
