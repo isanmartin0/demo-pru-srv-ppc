@@ -70,3 +70,8 @@ jenkins:
   maxOldBuildsToKeep: 5
   daysOldBuildsToKeep: 1
   errorOnPostDeployTestsUnstableResult: true
+
+appDynamics:
+  appDynamicsTemplatePath: appdynamics/appdynamics_template.yaml
+  creationAppDynamicsConfigMap: true
+  appDynamicsConfigMapsVolumePersistPath: /opt/appdynamics/conf

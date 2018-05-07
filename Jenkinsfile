@@ -64,6 +64,12 @@ def runPPCJenkinsfile() {
     def openshift_route_hostname = ''
     def openshift_route_hostname_with_protocol = ''
 
+    //AppDynamics parameters
+    def isPPCAppDynamicsTemplate = false
+    def appDynamicsTemplatePathPPC = relativeTargetDirPPC + 'appdynamics/appdynamics_template.yaml'
+    def appDynamicsConfigMapsVolumePersistDefaultPath = '/opt/appdynamics/conf'
+
+
 
     echo "BEGIN PARALLEL PROJECT CONFIGURATION (PPC)"
 
@@ -164,6 +170,15 @@ def runPPCJenkinsfile() {
                     echo "Parallel configuration project profile application-prod.properties not found"
                 }
 
+                //appDynamics template
+                isPPCAppDynamicsTemplate = fileExists appDynamicsTemplatePathPPC
+
+                if (isPPCAppDynamicsTemplate) {
+                    echo "Parallel configuration project AppDynamics template found"
+                } else {
+                    echo "Parallel configuration project AppDynamics template not found"
+                }
+
 
                 echo "isPPCJenkinsFile : ${isPPCJenkinsFile}"
                 echo "isPPCJenkinsYaml : ${isPPCJenkinsYaml}"
@@ -172,6 +187,7 @@ def runPPCJenkinsfile() {
                 echo "isPPCApplicationDevProperties : ${isPPCApplicationDevProperties}"
                 echo "isPPCApplicationUatProperties : ${isPPCApplicationUatProperties}"
                 echo "isPPCApplicationProdProperties : ${isPPCApplicationProdProperties}"
+                echo "isPPCAppDynamicsTemplate : ${isPPCAppDynamicsTemplate}"
 
             }
             catch (exc) {
@@ -391,6 +407,44 @@ def runPPCJenkinsfile() {
         echo "configMapsVolumePersistPath value: ${configMapsVolumePersistPath}"
 
 
+        //Creation AppDynamics config map
+        Boolean creationAppDynamicsConfigMap = false
+        def appDynamicsConfigMapsVolumePersistPath = ''
+        echo "params.appDynamics.creationAppDynamicsConfigMap: ${params.appDynamics.creationAppDynamicsConfigMap}"
+        echo "params.appDynamics.appDynamicsConfigMapsVolumePersistPath: ${params.appDynamics.appDynamicsConfigMapsVolumePersistPath}"
+
+        if (params.appDynamics.creationAppDynamicsConfigMap) {
+            creationAppDynamicsConfigMap = params.appDynamics.creationAppDynamicsConfigMap.toBoolean()
+        }
+
+        if (creationAppDynamicsConfigMap) {
+
+            //The appdynamics template is provided by parallel project configuration (PPC)
+            params.appDynamics.appDynamicsTemplatePath = relativeTargetDirPPC + params.appDynamics.appDynamicsTemplatePath
+            echo "Appdynamics template provided by parallel project configuration (PPC)"
+
+            assert params.appDynamics.appDynamicsTemplatePath?.trim()
+
+            echo "params.appDynamics.appDynamicsTemplatePath: ${params.appDynamics.appDynamicsTemplatePath}"
+
+            //Check appdynamics template existence
+            if (!params.appDynamics.appDynamicsTemplatePath) {
+                currentBuild.result = Constants.FAILURE_BUILD_RESULT
+                throw new hudson.AbortException('The parallel project configuration has not appdynamics template and the configuration needs it')
+            }
+
+
+            if (params.appDynamics.appDynamicsConfigMapsVolumePersistPath) {
+                appDynamicsConfigMapsVolumePersistPath = params.appDynamics.appDynamicsConfigMapsVolumePersistPath
+            } else {
+                appDynamicsConfigMapsVolumePersistPath = appDynamicsConfigMapsVolumePersistDefaultPath
+            }
+        }
+
+        echo "creationAppDynamicsConfigMap value: ${creationAppDynamicsConfigMap}"
+        echo "appDynamicsConfigMapsVolumePersistPath value: ${appDynamicsConfigMapsVolumePersistPath}"
+
+
         stage('OpenShift Build') {
             echo "Building image on OpenShift..."
 
@@ -431,6 +485,14 @@ def runPPCJenkinsfile() {
                         branch_type = branchType
                     }
                 }
+
+            }
+
+            boolean appDynamicsConfigMapPersisted = false
+
+            if (creationAppDynamicsConfigMap) {
+                echo "***************************** CREACION CONFIG MAP APPDYNAMICS *******************"
+
 
             }
 
