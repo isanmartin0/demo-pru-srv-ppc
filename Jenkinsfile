@@ -499,6 +499,7 @@ def runPPCJenkinsfile() {
 
                 if (branchType == 'release' || branchType == 'hotfix') {
 
+
                     echo "params.appDynamics.controllerHostnameUAT: ${params.appDynamics.controllerHostnameUAT}"
                     echo "params.appDynamics.controllerPortUAT: ${params.appDynamics.controllerPortUAT}"
                     echo "params.appDynamics.controllerSSLEnabledUAT: ${params.appDynamics.controllerSSLEnabledUAT}"
@@ -509,29 +510,24 @@ def runPPCJenkinsfile() {
                     echo "params.appDynamics.agentAccountNameUAT: ${params.appDynamics.agentAccountNameUAT}"
                     echo "params.appDynamics.agentAccountAccessKeyUAT: ${params.appDynamics.agentAccountAccessKeyUAT}"
 
-                    if (!params.appDynamics.controllerSSLEnabledUAT) {
-                        echo "****** no params.appDynamics.controllerSSLEnabledUAT"
-                    }
+                    Boolean controllerSSLEnabled = false
 
                     if (params.appDynamics.controllerSSLEnabledUAT) {
-                        echo "****** SI params.appDynamics.controllerSSLEnabledUAT"
+                        controllerSSLEnabled = params.appDynamics.controllerSSLEnabledUAT.toBoolean()
                     }
 
                     //Detect existence and show parameters of agent for UAT environment
-                    if (!params.appDynamics.controllerHostnameUAT || !params.appDynamics.controllerPortUAT || !params.appDynamics.controllerSSLEnabledUAT ||
+                    if (!params.appDynamics.controllerHostnameUAT || !params.appDynamics.controllerPortUAT ||
                         !params.appDynamics.agentAccountNameUAT || !params.appDynamics.agentAccountAccessKeyUAT || !params.appDynamics.appDynamicsTemplatePath) {
                             currentBuild.result = Constants.FAILURE_BUILD_RESULT
-                            throw new hudson.AbortException('There are mandatory AppDynamics parameters without value for UAT environment. The mandatory parameters are: controllerHostnameUAT, controllerPortUAT, controllerSSLEnabledUAT, agentAccountNameUAT, agentAccountAccessKeyUAT and appDynamicsTemplatePath')
+                            throw new hudson.AbortException('There are mandatory AppDynamics parameters without value for UAT environment. The mandatory parameters are: controllerHostnameUAT, controllerPortUAT, agentAccountNameUAT, agentAccountAccessKeyUAT and appDynamicsTemplatePath')
                     }
-
-
-
 
                     appDynamicsConfigMapCreated = openshiftAppDynamicsConfigMapsCreation {
                         appDynamicsTemplate = params.appDynamics.appDynamicsTemplatePath
                         appDynamics_controller_hostname = params.appDynamics.controllerHostnameUAT
                         appDynamics_controller_port = params.appDynamics.controllerPortUAT
-                        appDynamics_controller_ssl_enabled = params.appDynamics.controllerSSLEnabledUAT
+                        appDynamics_controller_ssl_enabled = controllerSSLEnabled
                         appDynamics_agent_application_name_prefix = params.appDynamics.agentApplicationNamePrefixUAT
                         appDynamics_agent_application_name_sufix = params.appDynamics.agentApplicationNameSufixUAT
                         appDynamics_agent_tier_name_prefix = params.appDynamics.agentTierNamePrefixUAT
@@ -544,13 +540,6 @@ def runPPCJenkinsfile() {
 
                 } else if (branchType == 'master') {
 
-                    //Detect existence and show parameters of agent for PRO environment
-                    if (!params.appDynamics.controllerHostnamePRO || !params.appDynamics.controllerPortPRO || !params.appDynamics.controllerSSLEnabledPRO
-                        || !params.appDynamics.agentAccountNamePRO || !params.appDynamics.agentAccountAccessKeyPRO || !params.appDynamics.appDynamicsTemplatePath) {
-                            currentBuild.result = Constants.FAILURE_BUILD_RESULT
-                            throw new hudson.AbortException('There are mandatory AppDynamics parameters without value for PRO environment. The mandatory parameters are: controllerHostnamePRO, controllerPortPRO, controllerSSLEnabledPRO, agentAccountNamePRO, agentAccountAccessKeyPRO and appDynamicsTemplatePath')
-                    }
-
                     echo "params.appDynamics.controllerHostnamePRO: ${params.appDynamics.controllerHostnamePRO}"
                     echo "params.appDynamics.controllerPortPRO: ${params.appDynamics.controllerPortPRO}"
                     echo "params.appDynamics.controllerSSLEnabledPRO: ${params.appDynamics.controllerSSLEnabledPRO}"
@@ -561,12 +550,25 @@ def runPPCJenkinsfile() {
                     echo "params.appDynamics.agentAccountNamePRO: ${params.appDynamics.agentAccountNamePRO}"
                     echo "params.appDynamics.agentAccountAccessKeyPRO: ${params.appDynamics.agentAccountAccessKeyPRO}"
 
+                    Boolean controllerSSLEnabled = false
+
+                    if (params.appDynamics.controllerSSLEnabledUAT) {
+                        controllerSSLEnabled = params.appDynamics.controllerSSLEnabledPRO.toBoolean()
+                    }
+
+                    //Detect existence and show parameters of agent for PRO environment
+                    if (!params.appDynamics.controllerHostnamePRO || !params.appDynamics.controllerPortPRO ||
+                        || !params.appDynamics.agentAccountNamePRO || !params.appDynamics.agentAccountAccessKeyPRO || !params.appDynamics.appDynamicsTemplatePath) {
+                            currentBuild.result = Constants.FAILURE_BUILD_RESULT
+                            throw new hudson.AbortException('There are mandatory AppDynamics parameters without value for PRO environment. The mandatory parameters are: controllerHostnamePRO, controllerPortPRO, agentAccountNamePRO, agentAccountAccessKeyPRO and appDynamicsTemplatePath')
+                    }
+
 
                     appDynamicsConfigMapCreated = openshiftAppDynamicsConfigMapsCreation {
                         appDynamicsTemplate = params.appDynamics.appDynamicsTemplatePath
                         appDynamics_controller_hostname = params.appDynamics.controllerHostnamePRO
                         appDynamics_controller_port = params.appDynamics.controllerPortPRO
-                        appDynamics_controller_ssl_enabled = params.appDynamics.controllerSSLEnabledPRO
+                        appDynamics_controller_ssl_enabled = controllerSSLEnabled
                         appDynamics_agent_application_name_prefix = params.appDynamics.agentApplicationNamePrefixPRO
                         appDynamics_agent_application_name_sufix = params.appDynamics.agentApplicationNameSufixPRO
                         appDynamics_agent_tier_name_prefix = params.appDynamics.agentTierNamePrefixPRO
