@@ -509,17 +509,17 @@ def runPPCJenkinsfile() {
                     echo "params.appDynamics.agentAccountNameUAT: ${params.appDynamics.agentAccountNameUAT}"
                     echo "params.appDynamics.agentAccountAccessKeyUAT: ${params.appDynamics.agentAccountAccessKeyUAT}"
 
-                    if (!params.appDynamics.controllerHostnameUAT) {
-                        echo "****** no params.appDynamics.controllerHostnameUAT"
+                    if (!params.appDynamics.controllerSSLEnabledUAT) {
+                        echo "****** no params.appDynamics.controllerSSLEnabledUAT"
                     }
 
-                    if (params.appDynamics.controllerHostnameUAT) {
-                        echo "****** SI params.appDynamics.controllerHostnameUAT"
+                    if (params.appDynamics.controllerSSLEnabledUAT) {
+                        echo "****** SI params.appDynamics.controllerSSLEnabledUAT"
                     }
 
                     //Detect existence and show parameters of agent for UAT environment
-                    if (!params.appDynamics.controllerHostnameUAT || !params.appDynamics.controllerPortUAT || !params.appDynamics.controllerSSLEnabledUAT
-                        || !params.appDynamics.agentAccountNameUAT || !params.appDynamics.agentAccountAccessKeyUAT || !params.appDynamics.appDynamicsTemplatePath) {
+                    if (!params.appDynamics.controllerHostnameUAT || !params.appDynamics.controllerPortUAT || !params.appDynamics.controllerSSLEnabledUAT ||
+                        !params.appDynamics.agentAccountNameUAT || !params.appDynamics.agentAccountAccessKeyUAT || !params.appDynamics.appDynamicsTemplatePath) {
                             currentBuild.result = Constants.FAILURE_BUILD_RESULT
                             throw new hudson.AbortException('There are mandatory AppDynamics parameters without value for UAT environment. The mandatory parameters are: controllerHostnameUAT, controllerPortUAT, controllerSSLEnabledUAT, agentAccountNameUAT, agentAccountAccessKeyUAT and appDynamicsTemplatePath')
                     }
