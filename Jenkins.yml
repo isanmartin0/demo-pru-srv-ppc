@@ -93,4 +93,4 @@ appDynamics:
   agentTierNameSufixPRO: -srv
   agentAccountNamePRO: customer1
   agentAccountAccessKeyPRO: d39876ee-8bc8-4923-bb7e-b976e5116fa2
-  javaOpts: '-javaagent:/opt/appdynamics/javaagent.jar -Dappdynamics.agent.logs.dir=/deployments/logs -Dappdynamics.agent.reuse.nodeName=true -Dappdynamics.agent.reuse.nodeName.prefix=ev-worldcoo-srv -Xbootclasspath/p:/wildfly/modules/system/layers/base/org/jboss/log4j/logmanager/main/log4j-jboss-logmanager-1.0.2.Final-redhat-1.jar -Djboss.modules.system.pkgs=org.jboss.byteman,com.appdynamics,com.appdynamics.,com.singularity,com.singularity.'
+  javaOpts: -javaagent:/opt/appdynamics/javaagent.jar -Dappdynamics.agent.logs.dir=/deployments/logs -Dappdynamics.agent.reuse.nodeName=true -Dappdynamics.agent.reuse.nodeName.prefix=${APPDYNAMICS_AGENT_REUSE_NODE_NAME_PREFIX} -Xbootclasspath/p:/wildfly/modules/system/layers/base/org/jboss/log4j/logmanager/main/log4j-jboss-logmanager-1.0.2.Final-redhat-1.jar -Djboss.modules.system.pkgs=org.jboss.byteman,com.appdynamics,com.appdynamics.,com.singularity,com.singularity.'
