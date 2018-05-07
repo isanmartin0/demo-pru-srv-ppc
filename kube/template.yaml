@@ -89,21 +89,30 @@ objects:
           deploymentconfig: ${PROJECT}
       spec:
         containers:
-        - image: "${DOCKER_REGISTRY}:5000/${PROJECT}${BRANCH_NAME_HY_CONTAINER_IMAGE}/${PROJECT}:latest"
-          imagePullPolicy: Always
-          name: ${PROJECT}
-          ports:
-          - containerPort: 8080
-            protocol: TCP
-          resources:
-            limits:
-              cpu: 500m
-              memory: 1000Mi
-            requests:
-              cpu: 100m
-              memory: 100Mi
-          terminationMessagePath: /dev/termination-log
-          terminationMessagePolicy: File
+          - env:
+              - name: JAVA_OPTS
+                value: >-
+                  -javaagent:/opt/appdynamics/javaagent.jar
+                  -Dappdynamics.agent.logs.dir=/deployments/logs
+                  -Dappdynamics.agent.reuse.nodeName=true
+                  -Dappdynamics.agent.reuse.nodeName.prefix=xxxxxxxxxxxxxxxxxxx
+                  -Xbootclasspath/p:/wildfly/modules/system/layers/base/org/jboss/log4j/logmanager/main/log4j-jboss-logmanager-1.0.2.Final-redhat-1.jar
+                  -Djboss.modules.system.pkgs=org.jboss.byteman,com.appdynamics,com.appdynamics.,com.singularity,com.singularity.
+            image: "${DOCKER_REGISTRY}:5000/${PROJECT}${BRANCH_NAME_HY_CONTAINER_IMAGE}/${PROJECT}:latest"
+            imagePullPolicy: Always
+            name: ${PROJECT}
+            ports:
+              - containerPort: 8080
+                protocol: TCP
+            resources:
+              limits:
+                cpu: 500m
+                memory: 1000Mi
+              requests:
+                cpu: 100m
+                memory: 100Mi
+            terminationMessagePath: /dev/termination-log
+            terminationMessagePolicy: File
         dnsPolicy: ClusterFirst
         restartPolicy: Always
         securityContext: {}
