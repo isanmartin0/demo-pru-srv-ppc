@@ -581,16 +581,27 @@ def runPPCJenkinsfile() {
 
                 }
 
-
                 //Persistence of the Appdynamics config map created
                 if (appDynamicsConfigMapCreated) {
+
+                    echo "The AppDynamics config map has been created"
                     appDynamicsConfigMapPersisted = openshiftAppDynamicsConfigMapsPersistence {
                         appDynamicsConfigMapsVolumePersistPathOpenshift = appDynamicsConfigMapsVolumePersistPath
                         branchHY = branchNameHY
                         branch_type = branchType
                     }
-                }
 
+                    if (appDynamicsConfigMapPersisted) {
+                        echo "The persistence of AppDynamics config map has been done in ${appDynamicsConfigMapsVolumePersistPath}"
+                    } else {
+                        currentBuild.result = Constants.FAILURE_BUILD_RESULT
+                        throw new hudson.AbortException('There is a problem with the persistence of the AppDynamics config map')
+                    }
+
+                } else {
+                    currentBuild.result = Constants.FAILURE_BUILD_RESULT
+                    throw new hudson.AbortException('There is a problem with the creation of the AppDynamics config map')
+                }
 
             }
 
