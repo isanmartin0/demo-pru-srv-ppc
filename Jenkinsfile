@@ -496,6 +496,7 @@ def runPPCJenkinsfile() {
 
                 echo "params.appDynamics.appDynamicsTemplatePath: ${params.appDynamics.appDynamicsTemplatePath}"
                 echo "appDynamicsConfigMapsVolumePersistPath value: ${appDynamicsConfigMapsVolumePersistPath}"
+                echo "params.appDynamics.javaOpts: ${params.appDynamics.javaOpts}"
 
                 if (branchType == 'release' || branchType == 'hotfix') {
 
