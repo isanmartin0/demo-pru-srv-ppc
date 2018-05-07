@@ -72,6 +72,6 @@ jenkins:
   errorOnPostDeployTestsUnstableResult: true
 
 appDynamics:
+  creationAppDynamicsConfigMap: false
   appDynamicsTemplatePath: appdynamics/appdynamics_template.yaml
-  creationAppDynamicsConfigMap: true
   appDynamicsConfigMapsVolumePersistPath: /opt/appdynamics/conf
