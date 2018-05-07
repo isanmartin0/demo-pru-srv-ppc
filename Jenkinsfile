@@ -606,6 +606,8 @@ def runPPCJenkinsfile() {
 
             }
 
+
+            appDynamicsConfigMapPersisted = false
             openshiftEnvironmentVariables {
                 springProfileActive = springProfile
                 branchHY = branchNameHY
