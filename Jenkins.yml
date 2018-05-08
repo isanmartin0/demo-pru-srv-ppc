@@ -73,6 +73,9 @@ jenkins:
 
 appDynamics:
   creationAppDynamicsConfigMap: true
+  branch:
+    - release
+    - master
   appDynamicsTemplatePath: appDynamics/appDynamics_template.yaml
   appDynamicsConfigMapsVolumePersistPath: /opt/appdynamics/conf
   controllerHostnameUAT: 10.85.150.11

@@ -472,8 +472,8 @@ def runPPCJenkinsfile() {
             boolean appDynamicsConfigMapCreated = false
             boolean appDynamicsConfigMapPersisted = false
 
-            if (creationAppDynamicsConfigMap && (branchType == 'release' || branchType == 'hotfix' || branchType == 'master')) {
-            //Only the release,hotfix and master branch types will have Appdynamics agent
+            if (creationAppDynamicsConfigMap && (branchType == 'release' || branchType == 'hotfix' || branchType == 'master') && (branchType in params.appDynamics.branch)) {
+            //Only the release,hotfix and master branch types can have Appdynamics agent (if the pipeline configuration parameters allow it)
 
                 def appDynamicsConfigMapsVolumePersistPath = ''
                 echo "params.appDynamics.appDynamicsConfigMapsVolumePersistPath: ${params.appDynamics.appDynamicsConfigMapsVolumePersistPath}"
