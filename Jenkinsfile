@@ -570,8 +570,8 @@ def runPPCJenkinsfile() {
                         appDynamics_agent_application_name_sufix = params.appDynamics.agentApplicationNameSufix
                         appDynamics_agent_tier_name_prefix = params.appDynamics.agentTierNamePrefix
                         appDynamics_agent_tier_name_sufix = params.appDynamics.agentTierNameSufix
-                        appDynamics_agent_account_name = params.appDynamics.agentAccountNamePRO
-                        appDynamics_agent_account_access_key = params.appDynamics.agentAccountAccessKey
+                        appDynamics_agent_account_name = params.appDynamics.agentAccountName
+                        appDynamics_agent_account_access_key = params.appDynamics.agentAccountAccessKeyPRO
                         branchHY = branchNameHY
                         branch_type = branchType
                     }
