@@ -611,7 +611,7 @@ def runPPCJenkinsfile() {
                 branch_type = branchType
                 configMapPersistedOpenshift = configMapPersisted
                 configMapsVolumePersistPathOpenshift = configMapsVolumePersistPath
-                appDynamicsConfigMapPersistedOpenshift = appDynamicsConfigMapPersisted
+                appDynamicsConfigMapCreatedOpenshift = appDynamicsConfigMapCreated
                 appDynamicsJavaOpts = params.appDynamics.javaOpts
                 appDynamicsAgentReuseNodeNamePrefix =  params.appDynamics.agentReuseNodeNamePrefix
                 appDynamicsAgentReuseNodeNameSufix =  params.appDynamics.agentReuseNodeNameSufix
