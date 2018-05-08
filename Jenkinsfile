@@ -421,8 +421,6 @@ def runPPCJenkinsfile() {
 
 
 
-
-
         stage('OpenShift Build') {
             echo "Building image on OpenShift..."
 
@@ -504,11 +502,11 @@ def runPPCJenkinsfile() {
                     echo "params.appDynamics.controllerHostnameUAT: ${params.appDynamics.controllerHostnameUAT}"
                     echo "params.appDynamics.controllerPortUAT: ${params.appDynamics.controllerPortUAT}"
                     echo "params.appDynamics.controllerSSLEnabledUAT: ${params.appDynamics.controllerSSLEnabledUAT}"
-                    echo "params.appDynamics.agentApplicationNamePrefixUAT: ${params.appDynamics.agentApplicationNamePrefixUAT}"
-                    echo "params.appDynamics.agentApplicationNameSufixUAT: ${params.appDynamics.agentApplicationNameSufixUAT}"
-                    echo "params.appDynamics.agentTierNamePrefixUAT: ${params.appDynamics.agentTierNamePrefixUAT}"
-                    echo "params.appDynamics.agentTierNameSufixUAT: ${params.appDynamics.agentTierNameSufixUAT}"
-                    echo "params.appDynamics.agentAccountNameUAT: ${params.appDynamics.agentAccountNameUAT}"
+                    echo "params.appDynamics.agentApplicationNamePrefix: ${params.appDynamics.agentApplicationNamePrefix}"
+                    echo "params.appDynamics.agentApplicationNameSufix: ${params.appDynamics.agentApplicationNameSufix}"
+                    echo "params.appDynamics.agentTierNamePrefix: ${params.appDynamics.agentTierNamePrefix}"
+                    echo "params.appDynamics.agentTierNameSufix: ${params.appDynamics.agentTierNameSufix}"
+                    echo "params.appDynamics.agentAccountName: ${params.appDynamics.agentAccountName}"
                     echo "params.appDynamics.agentAccountAccessKeyUAT: ${params.appDynamics.agentAccountAccessKeyUAT}"
 
                     Boolean controllerSSLEnabled = false
@@ -529,11 +527,11 @@ def runPPCJenkinsfile() {
                         appDynamics_controller_hostname = params.appDynamics.controllerHostnameUAT
                         appDynamics_controller_port = params.appDynamics.controllerPortUAT
                         appDynamics_controller_ssl_enabled = controllerSSLEnabled
-                        appDynamics_agent_application_name_prefix = params.appDynamics.agentApplicationNamePrefixUAT
-                        appDynamics_agent_application_name_sufix = params.appDynamics.agentApplicationNameSufixUAT
-                        appDynamics_agent_tier_name_prefix = params.appDynamics.agentTierNamePrefixUAT
-                        appDynamics_agent_tier_name_sufix = params.appDynamics.agentTierNameSufixUAT
-                        appDynamics_agent_account_name = params.appDynamics.agentAccountNameUAT
+                        appDynamics_agent_application_name_prefix = params.appDynamics.agentApplicationNamePrefix
+                        appDynamics_agent_application_name_sufix = params.appDynamics.agentApplicationNameSufix
+                        appDynamics_agent_tier_name_prefix = params.appDynamics.agentTierNamePrefix
+                        appDynamics_agent_tier_name_sufix = params.appDynamics.agentTierNameSufix
+                        appDynamics_agent_account_name = params.appDynamics.agentAccountName
                         appDynamics_agent_account_access_key = params.appDynamics.agentAccountAccessKeyUAT
                         branchHY = branchNameHY
                         branch_type = branchType
@@ -544,11 +542,11 @@ def runPPCJenkinsfile() {
                     echo "params.appDynamics.controllerHostnamePRO: ${params.appDynamics.controllerHostnamePRO}"
                     echo "params.appDynamics.controllerPortPRO: ${params.appDynamics.controllerPortPRO}"
                     echo "params.appDynamics.controllerSSLEnabledPRO: ${params.appDynamics.controllerSSLEnabledPRO}"
-                    echo "params.appDynamics.agentApplicationNamePrefixPRO: ${params.appDynamics.agentApplicationNamePrefixUAT}"
-                    echo "params.appDynamics.agentApplicationNameSufixPRO: ${params.appDynamics.agentApplicationNameSufixPRO}"
-                    echo "params.appDynamics.agentTierNamePrefixPRO: ${params.appDynamics.agentTierNamePrefixPRO}"
-                    echo "params.appDynamics.agentTierNameSufixPRO: ${params.appDynamics.agentTierNameSufixPRO}"
-                    echo "params.appDynamics.agentAccountNamePRO: ${params.appDynamics.agentAccountNamePRO}"
+                    echo "params.appDynamics.agentApplicationNamePrefix: ${params.appDynamics.agentApplicationNamePrefix}"
+                    echo "params.appDynamics.agentApplicationNameSufix: ${params.appDynamics.agentApplicationNameSufix}"
+                    echo "params.appDynamics.agentTierNamePrefix: ${params.appDynamics.agentTierNamePrefix}"
+                    echo "params.appDynamics.agentTierNameSufix: ${params.appDynamics.agentTierNameSufix}"
+                    echo "params.appDynamics.agentAccountName: ${params.appDynamics.agentAccountName}"
                     echo "params.appDynamics.agentAccountAccessKeyPRO: ${params.appDynamics.agentAccountAccessKeyPRO}"
 
                     Boolean controllerSSLEnabled = false
@@ -570,12 +568,12 @@ def runPPCJenkinsfile() {
                         appDynamics_controller_hostname = params.appDynamics.controllerHostnamePRO
                         appDynamics_controller_port = params.appDynamics.controllerPortPRO
                         appDynamics_controller_ssl_enabled = controllerSSLEnabled
-                        appDynamics_agent_application_name_prefix = params.appDynamics.agentApplicationNamePrefixPRO
-                        appDynamics_agent_application_name_sufix = params.appDynamics.agentApplicationNameSufixPRO
-                        appDynamics_agent_tier_name_prefix = params.appDynamics.agentTierNamePrefixPRO
-                        appDynamics_agent_tier_name_sufix = params.appDynamics.agentTierNameSufixPRO
+                        appDynamics_agent_application_name_prefix = params.appDynamics.agentApplicationNamePrefix
+                        appDynamics_agent_application_name_sufix = params.appDynamics.agentApplicationNameSufix
+                        appDynamics_agent_tier_name_prefix = params.appDynamics.agentTierNamePrefix
+                        appDynamics_agent_tier_name_sufix = params.appDynamics.agentTierNameSufix
                         appDynamics_agent_account_name = params.appDynamics.agentAccountNamePRO
-                        appDynamics_agent_account_access_key = params.appDynamics.agentAccountAccessKeyPRO
+                        appDynamics_agent_account_access_key = params.appDynamics.agentAccountAccessKey
                         branchHY = branchNameHY
                         branch_type = branchType
                     }
@@ -594,6 +592,8 @@ def runPPCJenkinsfile() {
 
                     if (appDynamicsConfigMapPersisted) {
                         echo "The persistence of AppDynamics config map has been done in ${appDynamicsConfigMapsVolumePersistPath}"
+                    } else {
+                        echo "WARNING. The AppDynamics config map hasn't been persisted. Maybe there was a prevously persistence of the config map"
                     }
 
                 } else {
@@ -603,8 +603,8 @@ def runPPCJenkinsfile() {
 
             }
 
+            //Creation of environment variables
 
-            appDynamicsConfigMapPersisted = false
             openshiftEnvironmentVariables {
                 springProfileActive = springProfile
                 branchHY = branchNameHY
@@ -613,6 +613,8 @@ def runPPCJenkinsfile() {
                 configMapsVolumePersistPathOpenshift = configMapsVolumePersistPath
                 appDynamicsConfigMapPersistedOpenshift = appDynamicsConfigMapPersisted
                 appDynamicsJavaOpts = params.appDynamics.javaOpts
+                appDynamicsAgentReuseNodeNamePrefix =  params.appDynamics.agentReuseNodeNamePrefix
+                appDynamicsAgentReuseNodeNameSufix =  params.appDynamics.agentReuseNodeNameSufix
             }
 
             openshiftBuildProject {
