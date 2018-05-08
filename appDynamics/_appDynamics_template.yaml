@@ -20,7 +20,6 @@ objects:
       appdynamics.agent.tierName=${APPDYNAMICS_AGENT_TIER_NAME}
       appdynamics.agent.accountName=${APPDYNAMICS_AGENT_ACCOUNT_NAME}
       appdynamics.agent.accountAccessKey=${APPDYNAMICS_AGENT_ACCOUNT_ACCESS_KEY}
-      appdynamics.agent.propiedadAdicional=${APPDYNAMICS_AGENT_PROPIEDAD_ADICIONAL}
 parameters:
 - description: "Project name"
   name: "PROJECT"
@@ -49,6 +48,3 @@ parameters:
 - description: "AppDynamics Agent Account Access Key"
   name: "APPDYNAMICS_AGENT_ACCOUNT_ACCESS_KEY"
   value: ""
-- description: "AppDynamics Agent Propiedad adicional"
-  name: "APPDYNAMICS_AGENT_PROPIEDAD_ADICIONAL"
-  value: "1234"
